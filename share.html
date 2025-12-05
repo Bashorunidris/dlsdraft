@@ -550,7 +550,14 @@
             // Set basic info
             document.getElementById('playerName').textContent = player.realName || player.name || 'Unknown Player';
             document.getElementById('playerTeam').textContent = player.teamName || player.team || 'Team';
-            document.getElementById('playerAvatar').textContent = (player.name || 'P')[0].toUpperCase();
+            
+            // Display player picture or fallback to avatar
+            const avatarEl = document.getElementById('playerAvatar');
+            if (player.playerPicture) {
+                avatarEl.innerHTML = `<img src="${player.playerPicture}" style="width: 100%; height: 100%; object-fit: cover; border-radius: 50%;">`;
+            } else {
+                avatarEl.textContent = (player.realName || player.name || 'P')[0].toUpperCase();
+            }
 
             // Set stats
             document.getElementById('playerPosition').textContent = player.position || player.role || '-';
