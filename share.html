@@ -515,9 +515,13 @@
         // ===== LOAD PLAYER DATA =====
         function loadPlayerCard(playerId) {
             showLoading(true);
+            console.log('Loading player card for:', playerId);
 
             db.collection('players').doc(playerId).get()
                 .then(doc => {
+                    console.log('Firebase response - exists:', doc.exists);
+                    console.log('Firebase response - data:', doc.data());
+                    
                     if (!doc.exists) {
                         showError('Player not found. This link may be invalid.');
                         return;
@@ -525,6 +529,8 @@
 
                     playerData = doc.data();
                     playerData.id = doc.id;
+
+                    console.log('Player data loaded:', playerData);
 
                     // Display player info
                     displayPlayerCard(playerData);
