@@ -7798,7 +7798,7 @@
 
         // ===== SHARE LINK FEATURE =====
         function sharePlayerLink(playerId) {
-            const shareLink = `${window.location.origin}/player/${playerId}`;
+            const shareLink = `${window.location.origin}/share.html?playerId=${playerId}`;
             const modal = document.getElementById('shareLinkOverlay');
             const input = modal.querySelector('.share-link-input');
             input.value = shareLink;
