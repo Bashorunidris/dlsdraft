@@ -1,0 +1,719 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DLS Draft - Player Card</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary-dark: #0a0e27;
+            --secondary-dark: #151930;
+            --accent-gold: #ffd700;
+            --accent-green: #00ff88;
+            --text-white: #ffffff;
+            --text-gray: #b8b8b8;
+            --hover-glow: rgba(255, 215, 0, 0.4);
+            --card-bg: rgba(21, 25, 48, 0.85);
+        }
+
+        body {
+            background: linear-gradient(135deg, var(--primary-dark) 0%, var(--secondary-dark) 100%);
+            color: var(--text-white);
+            min-height: 100vh;
+            padding: 20px;
+            font-family: 'Poppins', sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .loading {
+            text-align: center;
+            font-size: 1.5em;
+            color: var(--accent-gold);
+        }
+
+        .loading i {
+            animation: spin 2s linear infinite;
+            margin-right: 10px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .error {
+            background: rgba(255, 0, 0, 0.2);
+            border: 2px solid red;
+            color: #ff6b6b;
+            padding: 20px;
+            border-radius: 10px;
+            text-align: center;
+            max-width: 500px;
+        }
+
+        .card-container {
+            width: 100%;
+            max-width: 600px;
+        }
+
+        .player-card {
+            background: var(--card-bg);
+            border: 2px solid rgba(255, 215, 0, 0.3);
+            border-radius: 20px;
+            padding: 30px;
+            animation: slideIn 0.5s ease forwards;
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .player-header {
+            text-align: center;
+            margin-bottom: 25px;
+        }
+
+        .player-avatar {
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            background: rgba(255, 215, 0, 0.2);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 3em;
+            margin: 0 auto 15px;
+            border: 3px solid var(--accent-gold);
+        }
+
+        .player-name {
+            font-size: 1.8em;
+            font-weight: 900;
+            color: var(--accent-gold);
+            text-shadow: 0 0 20px var(--hover-glow);
+            margin-bottom: 10px;
+        }
+
+        .player-team {
+            font-size: 0.95em;
+            color: var(--text-gray);
+            margin-bottom: 5px;
+        }
+
+        .player-rating-badge {
+            display: inline-block;
+            background: rgba(255, 215, 0, 0.2);
+            border: 1px solid var(--accent-gold);
+            color: var(--accent-gold);
+            padding: 8px 15px;
+            border-radius: 20px;
+            font-weight: 600;
+            margin-top: 10px;
+        }
+
+        .rating-circle {
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, rgba(255, 215, 0, 0.2), rgba(0, 255, 136, 0.2));
+            border: 3px solid var(--accent-gold);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            margin: 20px auto;
+        }
+
+        .rating-label {
+            font-size: 0.8em;
+            color: var(--text-gray);
+            font-weight: 500;
+        }
+
+        .rating-number {
+            font-size: 2.5em;
+            font-weight: 900;
+            color: var(--accent-gold);
+            text-shadow: 0 0 15px var(--hover-glow);
+        }
+
+        .player-stats {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin: 25px 0;
+        }
+
+        .stat-item {
+            background: rgba(255, 215, 0, 0.08);
+            border: 1px solid rgba(255, 215, 0, 0.3);
+            padding: 15px;
+            border-radius: 10px;
+            text-align: center;
+        }
+
+        .stat-label {
+            font-size: 0.85em;
+            color: var(--text-gray);
+            margin-bottom: 8px;
+        }
+
+        .stat-value {
+            font-size: 1.3em;
+            font-weight: 700;
+            color: var(--accent-gold);
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 10px;
+            margin-top: 25px;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+
+        .btn {
+            padding: 12px 25px;
+            border: 2px solid rgba(255, 215, 0, 0.3);
+            background: rgba(255, 215, 0, 0.1);
+            color: var(--accent-gold);
+            border-radius: 10px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            white-space: nowrap;
+        }
+
+        .btn:hover {
+            background: rgba(255, 215, 0, 0.2);
+            border-color: var(--accent-gold);
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px var(--hover-glow);
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--accent-gold), #ffed4e);
+            color: var(--primary-dark);
+            border: none;
+        }
+
+        .btn-primary:hover {
+            background: linear-gradient(135deg, #ffed4e, var(--accent-gold));
+            box-shadow: 0 10px 30px var(--hover-glow);
+        }
+
+        /* RATING MODAL */
+        .rating-modal-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .rating-modal-overlay.active {
+            display: flex;
+        }
+
+        .rating-modal {
+            background: var(--card-bg);
+            border: 2px solid rgba(255, 215, 0, 0.4);
+            border-radius: 20px;
+            padding: 40px 30px;
+            max-width: 400px;
+            width: 100%;
+            text-align: center;
+            animation: slideIn 0.3s ease;
+        }
+
+        .rating-title {
+            font-size: 1.5em;
+            font-weight: 900;
+            color: var(--accent-gold);
+            margin-bottom: 25px;
+            text-shadow: 0 0 20px var(--hover-glow);
+        }
+
+        .stars-container {
+            font-size: 3em;
+            margin: 25px 0;
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        .stars-container i {
+            cursor: pointer;
+            color: var(--text-gray);
+            transition: all 0.2s;
+        }
+
+        .stars-container i:hover,
+        .stars-container i.active {
+            color: var(--accent-gold);
+            transform: scale(1.2);
+            text-shadow: 0 0 10px var(--hover-glow);
+        }
+
+        .rating-display {
+            color: var(--text-gray);
+            margin: 15px 0;
+            font-size: 1.1em;
+        }
+
+        .rating-display .rating-value {
+            color: var(--accent-gold);
+            font-weight: 700;
+            font-size: 1.3em;
+        }
+
+        .modal-buttons {
+            display: flex;
+            gap: 10px;
+            margin-top: 30px;
+        }
+
+        .modal-buttons button {
+            flex: 1;
+            padding: 12px;
+            border: 2px solid rgba(255, 215, 0, 0.3);
+            background: rgba(255, 215, 0, 0.1);
+            color: var(--accent-gold);
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+
+        .modal-buttons button.submit {
+            background: linear-gradient(135deg, var(--accent-gold), #ffed4e);
+            color: var(--primary-dark);
+            border: none;
+        }
+
+        .modal-buttons button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px var(--hover-glow);
+        }
+
+        /* TOAST NOTIFICATIONS */
+        .toast {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: var(--card-bg);
+            border: 2px solid rgba(255, 215, 0, 0.3);
+            color: var(--text-white);
+            padding: 15px 25px;
+            border-radius: 10px;
+            animation: slideIn 0.3s ease;
+            z-index: 2000;
+            max-width: 300px;
+        }
+
+        .toast.success {
+            border-color: rgba(0, 255, 136, 0.5);
+            background: rgba(0, 255, 136, 0.1);
+            color: var(--accent-green);
+        }
+
+        .toast.error {
+            border-color: rgba(255, 0, 0, 0.5);
+            background: rgba(255, 0, 0, 0.1);
+            color: #ff6b6b;
+        }
+
+        @media (max-width: 600px) {
+            .player-card {
+                padding: 20px;
+            }
+
+            .player-name {
+                font-size: 1.4em;
+            }
+
+            .player-stats {
+                grid-template-columns: 1fr;
+            }
+
+            .action-buttons {
+                flex-direction: column;
+            }
+
+            .btn {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="card-container">
+        <div id="loadingContainer" class="loading" style="display: none;">
+            <i class="fas fa-spinner"></i>
+            Loading player card...
+        </div>
+
+        <div id="errorContainer" class="error" style="display: none;"></div>
+
+        <div id="cardContainer" style="display: none;">
+            <div class="player-card">
+                <!-- Player Header -->
+                <div class="player-header">
+                    <div class="player-avatar" id="playerAvatar">⚽</div>
+                    <div class="player-name" id="playerName">Player Name</div>
+                    <div class="player-team" id="playerTeam">Team</div>
+                    <div class="player-rating-badge">
+                        <span id="totalRatings">0</span> Ratings
+                    </div>
+                </div>
+
+                <!-- Rating Circle -->
+                <div class="rating-circle">
+                    <div class="rating-label">AVERAGE RATING</div>
+                    <div class="rating-number" id="avgRating">0</div>
+                </div>
+
+                <!-- Player Stats -->
+                <div class="player-stats">
+                    <div class="stat-item">
+                        <div class="stat-label">Position</div>
+                        <div class="stat-value" id="playerPosition">-</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-label">Jersey #</div>
+                        <div class="stat-value" id="playerNumber">-</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-label">Team Score</div>
+                        <div class="stat-value" id="teamScore">-</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-label">Win Rate</div>
+                        <div class="stat-value" id="winRate">-</div>
+                    </div>
+                </div>
+
+                <!-- Action Buttons -->
+                <div class="action-buttons">
+                    <button class="btn btn-primary" onclick="openRatingModal()">
+                        <i class="fas fa-star"></i> Rate Player
+                    </button>
+                    <button class="btn" onclick="goBack()">
+                        <i class="fas fa-arrow-left"></i> Back
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- RATING MODAL -->
+    <div class="rating-modal-overlay" id="ratingModalOverlay">
+        <div class="rating-modal">
+            <div class="rating-title">Rate This Player</div>
+            <div class="stars-container" id="starsContainer">
+                <i class="fas fa-star" onclick="selectRating(1)"></i>
+                <i class="fas fa-star" onclick="selectRating(2)"></i>
+                <i class="fas fa-star" onclick="selectRating(3)"></i>
+                <i class="fas fa-star" onclick="selectRating(4)"></i>
+                <i class="fas fa-star" onclick="selectRating(5)"></i>
+            </div>
+            <div class="rating-display">
+                You rated: <span class="rating-value" id="selectedRating">0</span> ⭐
+            </div>
+            <div class="modal-buttons">
+                <button class="submit" onclick="submitRating()">Submit</button>
+                <button onclick="closeRatingModal()">Cancel</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Firebase -->
+    <script src="https://www.gstatic.com/firebasejs/10.0.0/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.0.0/firebase-firestore.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.0.0/firebase-auth.js"></script>
+
+    <script>
+         // Firebase config
+        const firebaseConfig = {
+            apiKey: "AIzaSyDW8V2SjNITrA4LcdmeILh944mTbOKnM0c",
+            authDomain: "rewarderhub.firebaseapp.com",
+            projectId: "rewarderhub",
+            storageBucket: "rewarderhub.appspot.com",
+            messagingSenderId: "85965945106",
+            appId: "1:85965945106:web:fa0a57d8968926e1041bcb",
+            measurementId: "G-F2ERB5NGN0"
+        };
+
+        // Initialize Firebase
+        const app = firebase.initializeApp(firebaseConfig);
+        const db = firebase.firestore();
+        const auth = firebase.auth();
+
+        let currentPlayerId = null;
+        let selectedRating = 0;
+        let playerData = null;
+
+        // ===== INITIALIZATION =====
+        window.addEventListener('load', () => {
+            initializePage();
+        });
+
+        function initializePage() {
+            // Get playerId from URL
+            const urlParams = new URLSearchParams(window.location.search);
+            currentPlayerId = urlParams.get('playerId') || urlParams.get('id') || extractPlayerIdFromPath();
+
+            if (!currentPlayerId) {
+                showError('No player ID provided. Invalid link.');
+                return;
+            }
+
+            loadPlayerCard(currentPlayerId);
+        }
+
+        function extractPlayerIdFromPath() {
+            const path = window.location.pathname;
+            const match = path.match(/\/player\/([^\/]+)/);
+            return match ? match[1] : null;
+        }
+
+        // ===== LOAD PLAYER DATA =====
+        function loadPlayerCard(playerId) {
+            showLoading(true);
+
+            db.collection('players').doc(playerId).get()
+                .then(doc => {
+                    if (!doc.exists) {
+                        showError('Player not found. This link may be invalid.');
+                        return;
+                    }
+
+                    playerData = doc.data();
+                    playerData.id = doc.id;
+
+                    // Display player info
+                    displayPlayerCard(playerData);
+
+                    // Load ratings
+                    loadPlayerRatings(playerId);
+                })
+                .catch(err => {
+                    console.error('Error loading player:', err);
+                    showError('Error loading player card. Please try again.');
+                });
+        }
+
+        function displayPlayerCard(player) {
+            showLoading(false);
+
+            // Set basic info
+            document.getElementById('playerName').textContent = player.realName || player.name || 'Unknown Player';
+            document.getElementById('playerTeam').textContent = player.teamName || player.team || 'Team';
+            document.getElementById('playerAvatar').textContent = (player.name || 'P')[0].toUpperCase();
+
+            // Set stats
+            document.getElementById('playerPosition').textContent = player.position || player.role || '-';
+            document.getElementById('playerNumber').textContent = player.jerseyNumber || player.number || '-';
+            document.getElementById('teamScore').textContent = player.teamScore || '-';
+            document.getElementById('winRate').textContent = player.winRate || '-';
+
+            // Show card
+            document.getElementById('cardContainer').style.display = 'block';
+        }
+
+        // ===== LOAD RATINGS =====
+        function loadPlayerRatings(playerId) {
+            db.collection('players').doc(playerId).collection('ratings').get()
+                .then(snapshot => {
+                    let totalRating = 0;
+                    let count = 0;
+
+                    snapshot.forEach(doc => {
+                        const rating = doc.data();
+                        totalRating += rating.rating || 0;
+                        count++;
+                    });
+
+                    const avgRating = count > 0 ? (totalRating / count).toFixed(1) : 0;
+
+                    document.getElementById('avgRating').textContent = avgRating;
+                    document.getElementById('totalRatings').textContent = count;
+                })
+                .catch(err => {
+                    console.error('Error loading ratings:', err);
+                    document.getElementById('avgRating').textContent = '0';
+                    document.getElementById('totalRatings').textContent = '0';
+                });
+        }
+
+        // ===== RATING FUNCTIONS =====
+        function openRatingModal() {
+            selectedRating = 0;
+            updateStars();
+            document.getElementById('ratingModalOverlay').classList.add('active');
+        }
+
+        function closeRatingModal() {
+            document.getElementById('ratingModalOverlay').classList.remove('active');
+            selectedRating = 0;
+            updateStars();
+        }
+
+        function selectRating(rating) {
+            selectedRating = rating;
+            updateStars();
+        }
+
+        function updateStars() {
+            const stars = document.querySelectorAll('#starsContainer i');
+            stars.forEach((star, index) => {
+                if (index < selectedRating) {
+                    star.classList.add('active');
+                } else {
+                    star.classList.remove('active');
+                }
+            });
+            document.getElementById('selectedRating').textContent = selectedRating;
+        }
+
+        function submitRating() {
+            if (selectedRating === 0) {
+                showToast('Please select a rating', 'error');
+                return;
+            }
+
+            // Get device ID for anonymous users
+            const deviceId = getDeviceId();
+            const isAuthenticated = auth.currentUser !== null;
+
+            // Create rating object
+            const ratingData = {
+                rating: selectedRating,
+                timestamp: new Date().toISOString(),
+                ratedAt: firebase.firestore.FieldValue.serverTimestamp()
+            };
+
+            if (isAuthenticated) {
+                ratingData.userId = auth.currentUser.uid;
+                ratingData.userName = auth.currentUser.displayName || auth.currentUser.email || 'Anonymous';
+            } else {
+                ratingData.deviceId = deviceId;
+                ratingData.isAnonymous = true;
+            }
+
+            // Check for 5-star protection
+            if (selectedRating === 5) {
+                checkExisting5StarRating(currentPlayerId, isAuthenticated, deviceId)
+                    .then(canRate => {
+                        if (!canRate) {
+                            showToast('You already gave this player a 5-star rating!', 'error');
+                            return;
+                        }
+                        saveRating(ratingData);
+                    });
+            } else {
+                saveRating(ratingData);
+            }
+        }
+
+        function checkExisting5StarRating(playerId, isAuthenticated, deviceId) {
+            let query;
+
+            if (isAuthenticated) {
+                query = db.collection('players').doc(playerId)
+                    .collection('ratings')
+                    .where('userId', '==', auth.currentUser.uid)
+                    .where('rating', '==', 5);
+            } else {
+                query = db.collection('players').doc(playerId)
+                    .collection('ratings')
+                    .where('deviceId', '==', deviceId)
+                    .where('rating', '==', 5);
+            }
+
+            return query.get()
+                .then(snapshot => snapshot.size === 0)
+                .catch(err => {
+                    console.error('Error checking rating:', err);
+                    return true;
+                });
+        }
+
+        function saveRating(ratingData) {
+            const ratingId = auth.currentUser 
+                ? auth.currentUser.uid + '_' + Date.now()
+                : 'device_' + Date.now();
+
+            db.collection('players').doc(currentPlayerId)
+                .collection('ratings').doc(ratingId).set(ratingData)
+                .then(() => {
+                    showToast(`Rating submitted! ⭐${selectedRating}`, 'success');
+                    closeRatingModal();
+                    loadPlayerRatings(currentPlayerId);
+                })
+                .catch(err => {
+                    console.error('Error saving rating:', err);
+                    showToast('Error saving rating. Please try again.', 'error');
+                });
+        }
+
+        // ===== UTILITY FUNCTIONS =====
+        function getDeviceId() {
+            let deviceId = localStorage.getItem('dlsDraftDeviceId');
+            if (!deviceId) {
+                deviceId = 'device_' + Math.random().toString(36).substr(2, 9) + '_' + Date.now();
+                localStorage.setItem('dlsDraftDeviceId', deviceId);
+            }
+            return deviceId;
+        }
+
+        function showLoading(show) {
+            document.getElementById('loadingContainer').style.display = show ? 'block' : 'none';
+        }
+
+        function showError(message) {
+            showLoading(false);
+            const errorContainer = document.getElementById('errorContainer');
+            errorContainer.textContent = '❌ ' + message;
+            errorContainer.style.display = 'block';
+        }
+
+        function showToast(message, type = 'success') {
+            const toast = document.createElement('div');
+            toast.className = `toast ${type}`;
+            toast.textContent = message;
+            document.body.appendChild(toast);
+
+            setTimeout(() => {
+                toast.remove();
+            }, 3000);
+        }
+
+        function goBack() {
+            window.history.back();
+        }
+    </script>
+</body>
+</html>
