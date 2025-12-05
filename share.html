@@ -345,6 +345,91 @@
             color: #ff6b6b;
         }
 
+        /* IMAGE VIEWER MODAL */
+        .image-viewer-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.95);
+            z-index: 3000;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .image-viewer-overlay.active {
+            display: flex;
+        }
+
+        .image-viewer-container {
+            position: relative;
+            max-width: 90vw;
+            max-height: 90vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            animation: zoomIn 0.3s ease;
+        }
+
+        @keyframes zoomIn {
+            from {
+                transform: scale(0.8);
+                opacity: 0;
+            }
+            to {
+                transform: scale(1);
+                opacity: 1;
+            }
+        }
+
+        .image-viewer-img {
+            max-width: 100%;
+            max-height: 100%;
+            object-fit: contain;
+            border-radius: 10px;
+            box-shadow: 0 0 40px rgba(255, 215, 0, 0.3);
+        }
+
+        .image-viewer-close {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            font-size: 2.5em;
+            color: var(--accent-gold);
+            cursor: pointer;
+            background: rgba(0, 0, 0, 0.7);
+            border: none;
+            padding: 10px 20px;
+            border-radius: 50%;
+            width: 60px;
+            height: 60px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+        }
+
+        .image-viewer-close:hover {
+            background: rgba(255, 215, 0, 0.2);
+            transform: scale(1.1);
+        }
+
+        .image-label {
+            position: absolute;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(0, 0, 0, 0.8);
+            color: var(--accent-gold);
+            padding: 12px 25px;
+            border-radius: 20px;
+            font-weight: 600;
+            border: 2px solid rgba(255, 215, 0, 0.4);
+        }
+
         @media (max-width: 600px) {
             .player-card {
                 padding: 20px;
@@ -446,6 +531,15 @@
                 <button class="submit" onclick="submitRating()">Submit</button>
                 <button onclick="closeRatingModal()">Cancel</button>
             </div>
+        </div>
+    </div>
+
+    <!-- IMAGE VIEWER MODAL -->
+    <div class="image-viewer-overlay" id="imageViewerOverlay" onclick="closeImageViewer(event)">
+        <div class="image-viewer-container" onclick="event.stopPropagation()">
+            <button class="image-viewer-close" onclick="closeImageViewer()">×</button>
+            <img id="viewerImage" class="image-viewer-img" src="" alt="Full view">
+            <div class="image-label" id="imageLabel">Image</div>
         </div>
     </div>
 
@@ -609,27 +703,44 @@
                 
                 if (player.clubImage) {
                     const clubDiv = document.createElement('div');
-                    clubDiv.style.cssText = 'text-align: center;';
+                    clubDiv.style.cssText = 'text-align: center; cursor: pointer;';
                     clubDiv.innerHTML = `
-                        <img src="${player.clubImage}" alt="Club" style="width: 80px; height: 80px; border-radius: 10px; border: 2px solid var(--accent-gold); object-fit: cover;">
+                        <img src="${player.clubImage}" alt="Club" style="width: 80px; height: 80px; border-radius: 10px; border: 2px solid var(--accent-gold); object-fit: cover; transition: all 0.3s ease;">
                         <div style="font-size: 0.75em; color: var(--text-gray); margin-top: 5px; font-weight: 600;">Club</div>
                     `;
+                    clubDiv.onclick = () => openImageViewer(player.clubImage, 'Club');
+                    clubDiv.onmouseover = (e) => e.target.style.transform = 'scale(1.05)';
+                    clubDiv.onmouseout = (e) => e.target.style.transform = 'scale(1)';
                     imagesContainer.appendChild(clubDiv);
                 }
                 
                 if (player.teamImage) {
                     const teamDiv = document.createElement('div');
-                    teamDiv.style.cssText = 'text-align: center;';
+                    teamDiv.style.cssText = 'text-align: center; cursor: pointer;';
                     teamDiv.innerHTML = `
-                        <img src="${player.teamImage}" alt="Team" style="width: 80px; height: 80px; border-radius: 10px; border: 2px solid var(--accent-gold); object-fit: cover;">
+                        <img src="${player.teamImage}" alt="Team" style="width: 80px; height: 80px; border-radius: 10px; border: 2px solid var(--accent-gold); object-fit: cover; transition: all 0.3s ease;">
                         <div style="font-size: 0.75em; color: var(--text-gray); margin-top: 5px; font-weight: 600;">Team</div>
                     `;
+                    teamDiv.onclick = () => openImageViewer(player.teamImage, 'Team');
+                    teamDiv.onmouseover = (e) => e.target.style.transform = 'scale(1.05)';
+                    teamDiv.onmouseout = (e) => e.target.style.transform = 'scale(1)';
                     imagesContainer.appendChild(teamDiv);
                 }
                 
                 const actionButtons = document.querySelector('.action-buttons');
                 actionButtons.parentNode.insertBefore(imagesContainer, actionButtons);
             }
+        }
+
+        function openImageViewer(imageSrc, label) {
+            document.getElementById('viewerImage').src = imageSrc;
+            document.getElementById('imageLabel').textContent = label;
+            document.getElementById('imageViewerOverlay').classList.add('active');
+        }
+
+        function closeImageViewer(event) {
+            if (event && event.target !== event.currentTarget) return;
+            document.getElementById('imageViewerOverlay').classList.remove('active');
         }
 
         // ===== LOAD RATINGS =====
