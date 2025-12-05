@@ -6,6 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>DLS Draft - Dashboard</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/emoji-picker-element@latest">
     <style>
         :root {
             --primary-dark: #0a0e27;
@@ -305,6 +306,8 @@
             background: rgba(255, 215, 0, 0.25);
             border-color: var(--accent-gold);
         }
+
+
 
         /* TABS */
         .tabs-section {
@@ -1877,6 +1880,164 @@
             margin-top: 2px;
         }
 
+        /* SHARE LINK MODAL */
+        .share-link-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.9);
+            z-index: 9999;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .share-link-overlay.active {
+            display: flex;
+            animation: fadeIn 0.3s ease;
+        }
+
+        .share-link-container {
+            background: var(--card-bg);
+            border: 2px solid rgba(255, 215, 0, 0.4);
+            border-radius: 20px;
+            padding: 40px 30px;
+            max-width: 500px;
+            width: 100%;
+            box-shadow: 0 20px 80px rgba(255, 215, 0, 0.3);
+            animation: slideUp 0.3s ease;
+            text-align: center;
+        }
+
+        .share-link-title {
+            font-size: 1.8em;
+            font-weight: 900;
+            color: var(--accent-gold);
+            margin-bottom: 20px;
+            text-shadow: 0 0 20px var(--hover-glow);
+        }
+
+        .share-link-input {
+            width: 100%;
+            padding: 15px;
+            background: rgba(0, 0, 0, 0.3);
+            border: 1px solid rgba(255, 215, 0, 0.3);
+            border-radius: 10px;
+            color: var(--text-white);
+            font-size: 0.9em;
+            margin-bottom: 15px;
+            word-break: break-all;
+            user-select: all;
+            transition: all 0.3s ease;
+        }
+
+        .share-link-input:focus {
+            border-color: var(--accent-gold);
+            box-shadow: 0 0 15px rgba(255, 215, 0, 0.3);
+        }
+
+        .share-link-buttons {
+            display: flex;
+            gap: 10px;
+            margin-top: 25px;
+        }
+
+        .share-link-btn {
+            flex: 1;
+            padding: 12px 20px;
+            border: 2px solid rgba(255, 215, 0, 0.3);
+            background: rgba(255, 215, 0, 0.1);
+            color: var(--accent-gold);
+            border-radius: 10px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+
+        .share-link-btn:hover {
+            background: rgba(255, 215, 0, 0.2);
+            border-color: var(--accent-gold);
+            transform: translateY(-2px);
+        }
+
+        .share-link-btn.copy {
+            background: var(--accent-gold);
+            color: var(--primary-dark);
+        }
+
+        .share-link-btn.copy:hover {
+            background: #ffed4e;
+            box-shadow: 0 5px 15px var(--hover-glow);
+        }
+
+        .share-link-description {
+            color: var(--text-gray);
+            font-size: 0.95em;
+            margin-bottom: 20px;
+            line-height: 1.5;
+        }
+
+        .share-link-input-group {
+            display: flex;
+            gap: 10px;
+            margin: 20px 0;
+        }
+
+        .share-link-input {
+            flex: 1;
+            padding: 12px 15px;
+            background: rgba(0, 0, 0, 0.3);
+            border: 1px solid rgba(255, 215, 0, 0.3);
+            border-radius: 10px;
+            color: var(--text-white);
+            font-size: 0.9em;
+            transition: all 0.3s ease;
+        }
+
+        .share-link-input:focus {
+            border-color: var(--accent-gold);
+            box-shadow: 0 0 15px rgba(255, 215, 0, 0.3);
+            outline: none;
+        }
+
+        .share-link-copy-btn {
+            padding: 12px 25px;
+            background: linear-gradient(135deg, var(--accent-gold), #ffed4e);
+            border: none;
+            color: var(--primary-dark);
+            border-radius: 10px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            white-space: nowrap;
+        }
+
+        .share-link-copy-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px var(--hover-glow);
+        }
+
+        .share-link-close-btn {
+            width: 100%;
+            padding: 12px 20px;
+            margin-top: 20px;
+            background: rgba(255, 215, 0, 0.15);
+            border: 2px solid rgba(255, 215, 0, 0.3);
+            color: var(--accent-gold);
+            border-radius: 10px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .share-link-close-btn:hover {
+            background: rgba(255, 215, 0, 0.25);
+            border-color: var(--accent-gold);
+        }
+
         /* REGISTRATION FORM MODAL */
         .registration-modal-overlay {
             display: none;
@@ -2309,8 +2470,8 @@
             line-height: 1.5;
         }
 
-        /* MESSENGER MODAL */
-        .messenger-overlay {
+        /* CARD MESSAGING MODAL */
+        .card-messaging-overlay {
             display: none;
             position: fixed;
             top: 0;
@@ -2318,60 +2479,68 @@
             width: 100%;
             height: 100%;
             background: rgba(0, 0, 0, 0.95);
-            z-index: 9100;
-            justify-content: center;
+            backdrop-filter: blur(10px);
+            z-index: 9500;
+            overflow-y: auto;
+        }
+
+        .card-messaging-overlay.active {
+            display: flex;
             align-items: center;
+            justify-content: center;
             padding: 20px;
         }
 
-        .messenger-overlay.active {
-            display: flex;
-        }
-
-        .messenger-modal {
+        .card-messaging-modal {
             background: var(--primary-dark);
-            border: 3px solid rgba(255, 215, 0, 0.5);
+            border: 2px solid rgba(255, 215, 0, 0.5);
             border-radius: 20px;
             width: 100%;
-            max-width: 500px;
-            max-height: 85vh;
+            max-width: 600px;
+            max-height: 80vh;
             display: flex;
             flex-direction: column;
+            position: relative;
             overflow: hidden;
             box-shadow: 0 0 50px rgba(255, 215, 0, 0.3);
         }
 
-        .messenger-header {
-            background: linear-gradient(135deg, rgba(255, 215, 0, 0.2), rgba(0, 255, 136, 0.1));
-            border-bottom: 2px solid rgba(255, 215, 0, 0.4);
+        .card-messaging-header {
+            background: rgba(255, 215, 0, 0.1);
+            border-bottom: 1px solid rgba(255, 215, 0, 0.3);
             padding: 20px;
             display: flex;
             justify-content: space-between;
             align-items: center;
         }
 
-        .messenger-title {
-            font-size: 1.2em;
-            font-weight: 900;
+        .card-messaging-title {
             color: var(--accent-gold);
+            font-size: 1.3em;
+            font-weight: 900;
             margin: 0;
         }
 
-        .messenger-close {
-            font-size: 1.8em;
-            cursor: pointer;
-            color: var(--text-gray);
+        .card-messaging-close {
             background: none;
             border: none;
-            transition: all 0.3s ease;
+            color: var(--text-gray);
+            font-size: 2em;
+            cursor: pointer;
+            transition: color 0.3s ease;
+            padding: 0;
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
         }
 
-        .messenger-close:hover {
+        .card-messaging-close:hover {
             color: var(--accent-gold);
-            transform: rotate(90deg);
         }
 
-        .messenger-messages {
+        .card-messages-list {
             flex: 1;
             overflow-y: auto;
             padding: 20px;
@@ -2380,75 +2549,290 @@
             gap: 15px;
         }
 
-        .messenger-message {
-            padding: 12px 15px;
-            border-radius: 10px;
-            max-width: 85%;
+        .card-message-item {
+            background: rgba(255, 215, 0, 0.08);
+            border: 1px solid rgba(255, 215, 0, 0.2);
+            border-radius: 12px;
+            padding: 15px;
             word-wrap: break-word;
+            position: relative;
+            transition: all 0.3s ease;
         }
 
-        .message-sent {
-            align-self: flex-end;
-            background: rgba(255, 215, 0, 0.2);
-            border: 1px solid rgba(255, 215, 0, 0.4);
+        .card-message-item:hover {
+            background: rgba(255, 215, 0, 0.12);
+            border-color: rgba(255, 215, 0, 0.4);
+        }
+
+        .card-message-item:hover .message-actions {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .message-actions {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            display: flex;
+            gap: 8px;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s ease;
+            z-index: 100;
+        }
+
+        .message-action-btn {
+            width: 32px;
+            height: 32px;
+            background: rgba(255, 215, 0, 0.15);
+            border: 1px solid rgba(255, 215, 0, 0.3);
+            border-radius: 8px;
             color: var(--accent-gold);
-        }
-
-        .message-received {
-            align-self: flex-start;
-            background: rgba(0, 255, 136, 0.15);
-            border: 1px solid rgba(0, 255, 136, 0.3);
-            color: var(--accent-green);
-        }
-
-        .message-time {
-            font-size: 0.7em;
-            color: var(--text-gray);
-            margin-top: 5px;
-        }
-
-        .message-voice {
+            cursor: pointer;
             display: flex;
             align-items: center;
-            gap: 10px;
-            padding: 8px 12px;
-            background: rgba(100, 200, 255, 0.15);
-            border-radius: 8px;
-            border: 1px solid rgba(100, 200, 255, 0.3);
-            margin-top: 5px;
+            justify-content: center;
+            font-size: 0.9em;
+            transition: all 0.3s ease;
         }
 
-        .messenger-input-area {
-            padding: 15px 20px;
-            border-top: 1px solid rgba(255, 215, 0, 0.1);
+        .message-action-btn:hover {
+            background: rgba(255, 215, 0, 0.3);
+            border-color: var(--accent-gold);
+            transform: scale(1.1);
+        }
+
+        .card-message-sender {
+            color: var(--accent-gold);
+            font-weight: 700;
+            font-size: 0.9em;
+            margin-bottom: 8px;
             display: flex;
-            flex-direction: column;
-            gap: 10px;
+            justify-content: space-between;
+            align-items: center;
         }
 
-        .messenger-input {
+        .card-message-time {
+            color: var(--text-gray);
+            font-size: 0.75em;
+        }
+
+        .card-message-text {
+            color: var(--text-white);
+            margin-bottom: 10px;
+            line-height: 1.5;
+        }
+
+        .card-message-voice {
+            margin: 10px 0;
+        }
+
+        .card-message-voice audio {
             width: 100%;
-            padding: 12px;
+            max-width: 300px;
+        }
+
+        /* REPLY MODAL */
+        .reply-modal-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.9);
+            z-index: 9600;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .reply-modal-overlay.active {
+            display: flex;
+            animation: fadeIn 0.3s ease;
+        }
+
+        .reply-modal-container {
+            background: rgba(21, 25, 48, 0.98);
+            border: 2px solid rgba(255, 215, 0, 0.4);
+            border-radius: 20px;
+            width: 100%;
+            max-width: 500px;
+            max-height: 80vh;
+            overflow-y: auto;
+            box-shadow: 0 20px 80px rgba(255, 215, 0, 0.3);
+            animation: slideUp 0.3s ease;
+        }
+
+        .reply-modal-header {
+            padding: 25px 20px;
+            border-bottom: 2px solid rgba(255, 215, 0, 0.2);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .reply-modal-title {
+            color: var(--accent-gold);
+            font-size: 1.2em;
+            font-weight: 700;
+        }
+
+        .reply-modal-sender-name {
+            color: var(--text-gray);
+            font-size: 0.9em;
+            margin-top: 3px;
+        }
+
+        .reply-modal-close-btn {
+            font-size: 1.8em;
+            background: none;
+            border: none;
+            color: var(--text-gray);
+            cursor: pointer;
+            transition: all 0.3s ease;
+            padding: 0;
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .reply-modal-close-btn:hover {
+            color: var(--accent-gold);
+            transform: rotate(90deg);
+        }
+
+        .reply-modal-content {
+            padding: 20px;
+        }
+
+        .reply-original-message {
             background: rgba(255, 215, 0, 0.08);
+            border-left: 4px solid var(--accent-gold);
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+
+        .reply-original-text {
+            color: var(--text-white);
+            font-size: 0.95em;
+            line-height: 1.4;
+        }
+
+        .reply-original-label {
+            color: var(--text-gray);
+            font-size: 0.85em;
+            font-weight: 600;
+            margin-bottom: 8px;
+            display: block;
+        }
+
+        .reply-original-audio {
+            margin-top: 12px;
+        }
+
+        .reply-original-audio audio {
+            width: 100%;
+            max-width: 100%;
+            height: 35px;
+        }
+
+        .user-reply-message {
+            margin-top: 15px;
+            padding: 12px;
+            background: rgba(0, 255, 136, 0.1);
+            border-left: 3px solid var(--accent-green);
+            border-radius: 6px;
+        }
+
+        .user-reply-label {
+            color: var(--accent-green);
+            font-weight: 600;
+            font-size: 0.9em;
+            margin-bottom: 8px;
+            display: block;
+        }
+
+        .user-reply-text {
+            color: var(--text-white);
+        }
+
+        .user-reply-voice {
+            color: var(--text-gray);
+        }
+
+        .user-reply-voice audio {
+            width: 100%;
+            height: 30px;
+            margin-top: 8px;
+        }
+
+        .reply-input-section {
+            margin-bottom: 15px;
+        }
+
+        .reply-input-label {
+            display: block;
+            color: var(--text-gray);
+            font-size: 0.85em;
+            font-weight: 600;
+            margin-bottom: 8px;
+        }
+
+        .reply-textarea {
+            width: 100%;
+            min-height: 100px;
+            background: rgba(0, 0, 0, 0.3);
             border: 1px solid rgba(255, 215, 0, 0.3);
             color: var(--text-white);
             border-radius: 8px;
-            box-sizing: border-box;
+            padding: 12px;
             font-family: 'Poppins', sans-serif;
+            font-size: 0.95em;
             resize: vertical;
-            min-height: 60px;
-            max-height: 100px;
+            box-sizing: border-box;
         }
 
-        .messenger-buttons {
+        .reply-textarea:focus {
+            outline: none;
+            border-color: var(--accent-gold);
+            background: rgba(0, 0, 0, 0.5);
+            box-shadow: 0 0 15px rgba(255, 215, 0, 0.2);
+        }
+
+        .reply-voice-indicator {
+            display: none;
+            background: rgba(255, 0, 0, 0.1);
+            border: 1px solid rgba(255, 0, 0, 0.3);
+            color: #ff6b6b;
+            padding: 12px;
+            border-radius: 8px;
+            margin-bottom: 15px;
+            font-size: 0.85em;
+            text-align: center;
+            animation: pulse 1s infinite;
+        }
+
+        .reply-voice-indicator.active {
+            display: block;
+        }
+
+        .reply-emoji-sticker-container {
+            margin-bottom: 15px;
             display: flex;
-            gap: 10px;
+            gap: 8px;
         }
 
-        .messenger-btn {
+        .reply-emoji-btn,
+        .reply-sticker-btn {
             flex: 1;
-            padding: 10px;
-            border: none;
+            padding: 10px 12px;
+            border: 1px solid rgba(255, 215, 0, 0.3);
+            background: rgba(255, 215, 0, 0.1);
+            color: var(--text-white);
             border-radius: 8px;
             cursor: pointer;
             font-weight: 600;
@@ -2457,33 +2841,122 @@
             align-items: center;
             justify-content: center;
             gap: 6px;
+            font-size: 0.9em;
         }
 
-        .messenger-send-btn {
-            background: linear-gradient(135deg, var(--accent-gold), #ffed4e);
-            color: var(--primary-dark);
+        .reply-emoji-btn:hover,
+        .reply-sticker-btn:hover {
+            background: rgba(255, 215, 0, 0.2);
+            border-color: var(--accent-gold);
+            color: var(--accent-gold);
         }
 
-        .messenger-send-btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 5px 15px rgba(255, 215, 0, 0.4);
+        .emoji-picker {
+            display: none;
+            position: absolute;
+            bottom: 60px;
+            right: 20px;
+            z-index: 9700;
+            background: var(--primary-dark);
+            border: 2px solid var(--accent-gold);
+            border-radius: 10px;
         }
 
-        .messenger-voice-btn {
-            background: rgba(0, 255, 136, 0.2);
-            border: 2px solid rgba(0, 255, 136, 0.4);
-            color: var(--accent-green);
+        .emoji-picker.active {
+            display: block;
         }
 
-        .messenger-voice-btn:hover {
-            background: rgba(0, 255, 136, 0.3);
+        .sticker-picker {
+            display: none;
+            position: absolute;
+            bottom: 60px;
+            right: 20px;
+            z-index: 9700;
+            background: var(--primary-dark);
+            border: 2px solid var(--accent-gold);
+            border-radius: 10px;
+            padding: 15px;
+            max-width: 300px;
         }
 
-        .messenger-voice-btn.recording {
-            background: rgba(255, 75, 75, 0.3);
-            border-color: rgba(255, 75, 75, 0.6);
+        .sticker-picker.active {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 10px;
+        }
+
+        .sticker-item {
+            padding: 10px;
+            text-align: center;
+            font-size: 2em;
+            cursor: pointer;
+            border-radius: 8px;
+            transition: all 0.2s ease;
+            background: rgba(255, 215, 0, 0.1);
+        }
+
+        .sticker-item:hover {
+            background: rgba(255, 215, 0, 0.2);
+            transform: scale(1.2);
+        }
+
+        .reply-button-group {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+
+        .reply-btn {
+            flex: 1;
+            padding: 12px 16px;
+            border: 1px solid rgba(255, 215, 0, 0.3);
+            background: rgba(255, 215, 0, 0.1);
+            color: var(--text-white);
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+            font-size: 0.9em;
+        }
+
+        .reply-btn:hover {
+            background: rgba(255, 215, 0, 0.2);
+            border-color: var(--accent-gold);
+            color: var(--accent-gold);
+        }
+
+        .reply-btn.recording {
+            background: rgba(255, 0, 0, 0.2);
+            border-color: #ff6b6b;
             color: #ff6b6b;
             animation: pulse 1s infinite;
+        }
+
+        .reply-send-btn {
+            width: 100%;
+            padding: 14px;
+            background: linear-gradient(135deg, var(--accent-gold), #ffed4e);
+            border: none;
+            color: var(--primary-dark);
+            border-radius: 8px;
+            font-weight: 700;
+            font-size: 1em;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .reply-send-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 30px rgba(255, 215, 0, 0.3);
+        }
+
+        .reply-send-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
         }
 
         @keyframes pulse {
@@ -2497,6 +2970,97 @@
                 opacity: 0.7;
             }
         }
+
+        .card-messaging-input-area {
+            padding: 20px;
+            border-top: 1px solid rgba(255, 215, 0, 0.2);
+            background: rgba(255, 215, 0, 0.05);
+        }
+
+        .card-messaging-input {
+            width: 100%;
+            min-height: 80px;
+            background: rgba(0, 0, 0, 0.3);
+            border: 1px solid rgba(255, 215, 0, 0.3);
+            color: var(--text-white);
+            border-radius: 10px;
+            padding: 12px;
+            font-family: 'Poppins', sans-serif;
+            font-size: 0.95em;
+            resize: vertical;
+            margin-bottom: 12px;
+            box-sizing: border-box;
+        }
+
+        .card-messaging-input:focus {
+            outline: none;
+            border-color: var(--accent-gold);
+            background: rgba(0, 0, 0, 0.5);
+        }
+
+        .card-messaging-buttons {
+            display: flex;
+            gap: 10px;
+        }
+
+        .card-messaging-btn {
+            flex: 1;
+            padding: 12px;
+            border: none;
+            border-radius: 8px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+            font-size: 0.9em;
+        }
+
+        .card-messaging-voice-btn {
+            background: rgba(0, 255, 136, 0.2);
+            color: var(--accent-green);
+            border: 1px solid rgba(0, 255, 136, 0.4);
+        }
+
+        .card-messaging-voice-btn:hover {
+            background: rgba(0, 255, 136, 0.3);
+            border-color: var(--accent-green);
+        }
+
+        .card-messaging-voice-btn.recording {
+            background: #ff6b6b;
+            color: white;
+            border-color: #ff6b6b;
+            animation: pulse 1s infinite;
+        }
+
+        .card-messaging-send-btn {
+            background: linear-gradient(135deg, var(--accent-gold), #ffed4e);
+            color: var(--primary-dark);
+            border: none;
+        }
+
+        .card-messaging-send-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 20px var(--hover-glow);
+        }
+
+        @keyframes pulse {
+
+            0%,
+            100% {
+                box-shadow: 0 0 0 0 rgba(255, 107, 107, 0.7);
+            }
+
+            50% {
+                box-shadow: 0 0 0 10px rgba(255, 107, 107, 0);
+            }
+        }
+
+        /* MESSENGER MODAL */
+
 
         /* HIGHLIGHT VIEWER MODAL */
         .highlight-viewer-overlay {
@@ -3248,6 +3812,18 @@
 
             to {
                 opacity: 1;
+            }
+        }
+
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(50px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
             }
         }
 
@@ -6274,7 +6850,7 @@
                 newsCard.className = 'news-card';
                 newsCard.style.animationDelay = (index * 0.1) + 's';
                 newsCard.innerHTML = `
-                    <img src="${news.image || 'https://via.placeholder.com/400'}" alt="${news.title}" class="news-image">
+                    <img src="${news.image || 'data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%22400%22 height=%22250%22%3E%3Crect fill=%22%23333%22 width=%22400%22 height=%22250%22/%3E%3Ctext x=%2250%25%22 y=%2250%25%22 font-size=%2224%22 fill=%22%23999%22 text-anchor=%22middle%22 dominant-baseline=%22middle%22%3ENo Image%3C/text%3E%3C/svg%3E'}" alt="${news.title}" class="news-image">
                     <div class="news-content">
                         <div class="news-date">${news.date || new Date().toLocaleDateString()}</div>
                         <h3 class="news-title">${news.title}</h3>
@@ -6727,12 +7303,13 @@
 
             // === TEAM A INFO ===
             // Host info
-            const teamAHostImg = match.teamA?.hostImage || match.teamA?.avatar || 'https://via.placeholder.com/80?text=Host';
+            const hostPlaceholder = 'data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%2280%22 height=%2280%22%3E%3Crect fill=%22%23333%22 width=%2280%22 height=%2280%22 rx=%228%22/%3E%3Ctext x=%2240%22 y=%2245%22 font-size=%2224%22 fill=%22%23999%22 text-anchor=%22middle%22 dominant-baseline=%22middle%22%3EHost%3C/text%3E%3C/svg%3E';
+            const teamAHostImg = match.teamA?.hostImage || match.teamA?.avatar || hostPlaceholder;
             const teamAHostName = match.teamA?.hostName || match.teamA?.owner || 'Host Name';
             const teamAOwner = match.teamA?.owner || 'Club Owner';
 
             document.getElementById('teamAHostImg').src = teamAHostImg;
-            document.getElementById('teamAHostImg').onerror = function () { this.src = 'https://via.placeholder.com/80?text=Host'; };
+            document.getElementById('teamAHostImg').onerror = function () { this.src = hostPlaceholder; };
             document.getElementById('teamAHostName').textContent = teamAHostName;
             document.getElementById('teamAOwner').textContent = teamAOwner;
 
@@ -6745,12 +7322,12 @@
 
             // === TEAM B INFO ===
             // Host info
-            const teamBHostImg = match.teamB?.hostImage || match.teamB?.avatar || 'https://via.placeholder.com/80?text=Host';
+            const teamBHostImg = match.teamB?.hostImage || match.teamB?.avatar || hostPlaceholder;
             const teamBHostName = match.teamB?.hostName || match.teamB?.owner || 'Host Name';
             const teamBOwner = match.teamB?.owner || 'Club Owner';
 
             document.getElementById('teamBHostImg').src = teamBHostImg;
-            document.getElementById('teamBHostImg').onerror = function () { this.src = 'https://via.placeholder.com/80?text=Host'; };
+            document.getElementById('teamBHostImg').onerror = function () { this.src = hostPlaceholder; };
             document.getElementById('teamBHostName').textContent = teamBHostName;
             document.getElementById('teamBOwner').textContent = teamBOwner;
 
@@ -7035,13 +7612,20 @@
 
         // Get team avatar/image (for mini cards)
         function getTeamAvatar(team) {
-            if (!team) return 'https://via.placeholder.com/60?text=Team';
+            const placeholderSvg = 'data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%2260%22 height=%2260%22%3E%3Crect fill=%22%23444%22 width=%2260%22 height=%2260%22 rx=%228%22/%3E%3Ctext x=%2230%22 y=%2235%22 font-size=%2220%22 fill=%22%23ffd700%22 text-anchor=%22middle%22 dominant-baseline=%22middle%22 font-weight=%22bold%22%3E%s%3C/text%3E%3C/svg%3E';
+
+            if (!team) {
+                // Return generic team placeholder
+                return 'data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%2260%22 height=%2260%22%3E%3Crect fill=%22%23444%22 width=%2260%22 height=%2260%22 rx=%228%22/%3E%3Ctext x=%2230%22 y=%2235%22 font-size=%2220%22 fill=%22%23999%22 text-anchor=%22middle%22 dominant-baseline=%22middle%22%3E⚽%3C/text%3E%3C/svg%3E';
+            }
+
             if (typeof team.avatar === 'string' && team.avatar.startsWith('http')) {
                 return team.avatar;
             }
-            // Return placeholder with team initials
+
+            // Return SVG with team initials
             const initials = (team.name || 'Team').split(' ').map(w => w[0]).join('').substring(0, 2).toUpperCase();
-            return `https://via.placeholder.com/60?text=${initials}`;
+            return `data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%2260%22 height=%2260%22%3E%3Crect fill=%22%23444%22 width=%2260%22 height=%2260%22 rx=%228%22/%3E%3Ctext x=%2230%22 y=%2235%22 font-size=%2220%22 fill=%22%23ffd700%22 text-anchor=%22middle%22 dominant-baseline=%22middle%22 font-weight=%22bold%22%3E${initials}%3C/text%3E%3C/svg%3E`;
         }
 
         // Render mini cards with real data from Firebase
@@ -7212,6 +7796,69 @@
         const CLOUDINARY_UPLOAD_PRESET = 'posepreset';
         const CLOUDINARY_API_URL = `https://api.cloudinary.com/v1_1/${CLOUDINARY_CLOUD_NAME}/auto/upload`;
 
+        // ===== SHARE LINK FEATURE =====
+        function sharePlayerLink(playerId) {
+            const shareLink = `${window.location.origin}/player/${playerId}`;
+            const modal = document.getElementById('shareLinkOverlay');
+            const input = modal.querySelector('.share-link-input');
+            input.value = shareLink;
+            modal.classList.add('active');
+            input.focus();
+            input.select();
+        }
+
+        function closeShareLinkModal() {
+            document.getElementById('shareLinkOverlay').classList.remove('active');
+        }
+
+        function copyShareLink() {
+            const input = document.querySelector('.share-link-input');
+            input.select();
+            document.execCommand('copy');
+            showToast('Link copied to clipboard! 📋', 'success');
+        }
+
+        // Handle shared player links (when someone clicks shared link)
+        function handleSharedPlayerLink() {
+            const path = window.location.pathname;
+            const playerIdMatch = path.match(/\/player\/([^\/]+)/);
+
+            if (playerIdMatch) {
+                const playerId = playerIdMatch[1];
+                // Load and display player card without redirecting
+                displaySharedPlayerCard(playerId);
+            }
+        }
+
+        function displaySharedPlayerCard(playerId) {
+            const db = firebase.firestore();
+
+            db.collection('players').doc(playerId).get().then(doc => {
+                if (!doc.exists) {
+                    showToast('Player not found', 'error');
+                    return;
+                }
+
+                const playerData = doc.data();
+                // Open the player details modal with the shared player's info
+                window.currentViewingPlayerId = playerId;
+                viewPlayerDetails(playerId);
+            }).catch(err => {
+                console.error('Error loading shared player:', err);
+                showToast('Error loading player', 'error');
+            });
+        }
+
+        // Run on page load to check for shared player links
+        window.addEventListener('load', () => {
+            handleSharedPlayerLink();
+        });
+
+        // Also check on hash/URL change
+        window.addEventListener('popstate', () => {
+            handleSharedPlayerLink();
+        });
+
         // ===== PLAYERS RATING MODAL =====
         let playerRegistrationData = {};
         let currentUserId = null;
@@ -7268,22 +7915,32 @@
                     const delay = cardIndex * 0.1;
                     cardIndex++;
 
-                    // Fetch rating data
-                    db.collection('players').doc(doc.id).collection('ratings').get().then(ratingSnapshot => {
-                        let totalPoints = 0;
-                        let ratingCount = 0;
+                    // Fetch rating data (both old auth-based and new device-based)
+                    let totalPoints = 0;
+                    let ratingCount = 0;
 
+                    // Get old ratings (auth-based)
+                    db.collection('players').doc(doc.id).collection('ratings').get().then(ratingSnapshot => {
                         ratingSnapshot.forEach(ratingDoc => {
                             const rating = ratingDoc.data().rating || 0;
                             totalPoints += rating * 0.1; // Each star = 0.1 points
                             ratingCount++;
                         });
 
-                        // Update the card with rating info
-                        const ratingElement = document.querySelector(`[data-player-id="${doc.id}"] .player-card-rating-badge`);
-                        if (ratingElement) {
-                            ratingElement.innerHTML = `<span class="player-card-rating-number">${totalPoints.toFixed(1)}</span><span class="player-card-rating-count">(${ratingCount})</span>`;
-                        }
+                        // Also get new device-based ratings
+                        db.collection('players').doc(doc.id).collection('deviceRatings').get().then(deviceSnapshot => {
+                            deviceSnapshot.forEach(deviceRatingDoc => {
+                                const rating = deviceRatingDoc.data().rating || 0;
+                                totalPoints += rating * 0.1; // Each star = 0.1 points
+                                ratingCount++;
+                            });
+
+                            // Update the card with rating info
+                            const ratingElement = document.querySelector(`[data-player-id="${doc.id}"] .player-card-rating-badge`);
+                            if (ratingElement) {
+                                ratingElement.innerHTML = `<span class="player-card-rating-number">${totalPoints.toFixed(1)}</span><span class="player-card-rating-count">(${ratingCount})</span>`;
+                            }
+                        });
                     });
 
                     html += `
@@ -7438,14 +8095,20 @@
                                 <button class="player-id-btn" onclick="openPlayerEditFromDetails('${playerId}')">
                                     <i class="fas fa-edit"></i> Edit
                                 </button>
+                                <button class="player-id-btn" onclick="openCardMessaging('${playerId}')">
+                                    <i class="fas fa-inbox"></i> Messages
+                                </button>
+                                <button class="player-id-btn" onclick="sharePlayerLink('${playerId}')">
+                                    <i class="fas fa-share-alt"></i> Share
+                                </button>
                             ` : `
-                                <button class="player-id-btn" onclick="openPlayerMessenger('${playerId}')" title="Send message or voice note">
+                                <button class="player-id-btn" onclick="openCardMessaging('${playerId}')">
                                     <i class="fas fa-comments"></i> Message
                                 </button>
+                                <button class="player-id-btn" onclick="sharePlayerLink('${playerId}')">
+                                    <i class="fas fa-share-alt"></i> Share
+                                </button>
                             `}
-                            <button class="player-id-btn" onclick="sharePlayerProfile('${playerId}')" title="Share player profile">
-                                <i class="fas fa-share-alt"></i> Share
-                            </button>
                             <button class="player-id-btn" onclick="openPlayerRatingPopup('${playerId}')">
                                 <i class="fas fa-star"></i> Rate Player
                             </button>
@@ -7466,6 +8129,738 @@
 
         function closePlayerDetailsModal() {
             document.getElementById('playerDetailsOverlay').classList.remove('active');
+        }
+
+        // ===== CARD MESSAGING SYSTEM =====
+        let currentCardMessagingPlayerId = null;
+        let cardMediaRecorder = null;
+        let cardAudioChunks = [];
+        let cardIsRecording = false;
+        let currentReplyToSenderId = null;
+        let currentReplyToSenderUsername = null;
+
+        function openCardMessaging(playerId) {
+            if (!auth.currentUser) {
+                showToast('Please log in', 'warning');
+                return;
+            }
+
+            currentCardMessagingPlayerId = playerId;
+            const db = firebase.firestore();
+            const userId = auth.currentUser.uid;
+            const isOwner = userId === playerId;
+
+            // Get player name and set title
+            db.collection('players').doc(playerId).get().then(doc => {
+                if (doc.exists) {
+                    const playerName = doc.data().realName || 'Player';
+                    if (isOwner) {
+                        document.getElementById('cardMessagingTitle').textContent = `📬 Messages to ${playerName}`;
+                    } else {
+                        document.getElementById('cardMessagingTitle').textContent = `💬 Message to ${playerName}`;
+                    }
+                }
+            }).catch(err => console.error('Error loading player name:', err));
+
+            // Show/hide input area based on ownership
+            const inputArea = document.querySelector('.card-messaging-input-area');
+            if (isOwner) {
+                inputArea.style.display = 'none';
+            } else {
+                inputArea.style.display = 'block';
+            }
+
+            loadCardMessages(playerId);
+            document.getElementById('cardMessagingOverlay').classList.add('active');
+        }
+
+        function closeCardMessaging() {
+            document.getElementById('cardMessagingOverlay').classList.remove('active');
+            currentCardMessagingPlayerId = null;
+            cardAudioChunks = [];
+        }
+
+        function loadCardMessages(playerId) {
+            const db = firebase.firestore();
+            const userId = auth.currentUser.uid;
+            const messagesContainer = document.getElementById('cardMessagesList');
+
+            // Get all messages for this player card
+            db.collection('players').doc(playerId).collection('cardMessages')
+                .orderBy('timestamp', 'asc')
+                .onSnapshot(snapshot => {
+                    messagesContainer.innerHTML = '';
+
+                    if (snapshot.empty) {
+                        messagesContainer.innerHTML = '<div style="text-align: center; color: var(--text-gray); padding: 20px;">No messages yet</div>';
+                        return;
+                    }
+
+                    snapshot.forEach(doc => {
+                        const msg = doc.data();
+                        const isOwner = userId === playerId;
+                        const isSender = msg.senderId === userId;
+
+                        const msgEl = document.createElement('div');
+                        msgEl.className = 'card-message-item';
+                        msgEl.setAttribute('data-message-id', doc.id);
+
+                        // Make received messages clickable
+                        if (!isSender) {
+                            msgEl.style.cursor = 'pointer';
+                            msgEl.onclick = (e) => {
+                                if (!e.target.closest('.message-action-btn')) {
+                                    openReplyModal(msg.senderId, msg.senderUsername, msg.type, msg.text || '', msg.audioUrl || '', doc.id);
+                                }
+                            };
+                        }
+
+                        let messageHTML = `
+                            <div class="card-message-sender">
+                                <span>${msg.senderUsername || 'Unknown'}</span>
+                                <span class="card-message-time">${new Date(msg.timestamp?.toDate?.() || msg.timestamp).toLocaleString()}</span>
+                            </div>
+                            <div class="message-actions">
+                                <button class="message-action-btn" title="Copy" onclick="copyMessageToClipboard('${doc.id}', '${(msg.text || '').replace(/'/g, "\\'")}')">📋</button>
+                                <button class="message-action-btn" title="Reply" onclick="openReplyModal('${msg.senderId}', '${(msg.senderUsername || 'Unknown').replace(/'/g, "\\'")}', '${msg.type}', '${(msg.text || '').replace(/'/g, "\\'")}', '${msg.audioUrl || ''}', '${doc.id}')">💬</button>
+                                ${isSender ? `<button class="message-action-btn" title="Delete" onclick="deleteMessage('${doc.id}')">🗑️</button>` : ''}
+                            </div>
+                        `;
+
+                        if (msg.type === 'text') {
+                            messageHTML += `<div class="card-message-text">${msg.text || ''}</div>`;
+                        } else if (msg.type === 'voice') {
+                            messageHTML += `
+                                <div class="card-message-voice">
+                                    <i class="fas fa-volume-up"></i>
+                                    <audio controls style="width: 100%; max-width: 300px; margin-top: 5px;">
+                                        <source src="${msg.audioUrl || ''}" type="audio/wav">
+                                        Your browser does not support audio playback.
+                                    </audio>
+                                </div>
+                            `;
+                        }
+
+                        msgEl.innerHTML = messageHTML;
+                        messagesContainer.appendChild(msgEl);
+                    });
+
+                    // Scroll to bottom
+                    setTimeout(() => {
+                        messagesContainer.scrollTop = messagesContainer.scrollHeight;
+                    }, 100);
+                }, error => {
+                    console.error('Error loading messages:', error);
+                    messagesContainer.innerHTML = `<div style="text-align: center; color: #ff6b6b; padding: 20px;">Error loading messages</div>`;
+                });
+        }
+
+        async function sendCardMessage() {
+            const messageText = document.getElementById('cardMessageInput').value.trim();
+
+            if (!messageText) {
+                showToast('Please type a message', 'warning');
+                return;
+            }
+
+            if (!currentCardMessagingPlayerId) {
+                showToast('No recipient selected', 'error');
+                return;
+            }
+
+            const db = firebase.firestore();
+            const userId = auth.currentUser.uid;
+            const playerId = currentCardMessagingPlayerId;
+
+            try {
+                // Get sender's username
+                const senderDoc = await db.collection('players').doc(userId).get();
+                const senderUsername = senderDoc.exists ? senderDoc.data().realName : 'Unknown User';
+
+                // Check if this is a reply or original message
+                if (currentReplyToSenderId) {
+                    // REPLY: Save message in BOTH locations
+                    // 1. Save in card owner's collection (playerId)
+                    await db.collection('players').doc(playerId).collection('cardMessages').add({
+                        senderId: userId,
+                        senderUsername: senderUsername,
+                        replyTo: currentReplyToSenderId,
+                        replyToUsername: currentReplyToSenderUsername,
+                        type: 'text',
+                        text: messageText,
+                        timestamp: firebase.firestore.Timestamp.now()
+                    });
+
+                    // 2. Save in original sender's collection (currentReplyToSenderId)
+                    await db.collection('players').doc(currentReplyToSenderId).collection('cardMessages').add({
+                        senderId: userId,
+                        senderUsername: senderUsername,
+                        replyTo: currentReplyToSenderId,
+                        replyToUsername: currentReplyToSenderUsername,
+                        type: 'text',
+                        text: messageText,
+                        isReplyFromOwner: true,
+                        timestamp: firebase.firestore.Timestamp.now()
+                    });
+
+                    showToast('Reply sent! 💬', 'success');
+                    clearReplyContext();
+                } else {
+                    // ORIGINAL MESSAGE: Save to card owner's collection
+                    await db.collection('players').doc(playerId).collection('cardMessages').add({
+                        senderId: userId,
+                        senderUsername: senderUsername,
+                        type: 'text',
+                        text: messageText,
+                        timestamp: firebase.firestore.Timestamp.now()
+                    });
+
+                    showToast('Message sent! 💬', 'success');
+                }
+
+                document.getElementById('cardMessageInput').value = '';
+            } catch (err) {
+                console.error('Error sending message:', err);
+                showToast('Error sending message', 'error');
+            }
+        }
+
+        async function toggleCardVoiceRecord() {
+            if (!cardIsRecording) {
+                try {
+                    const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+                    cardMediaRecorder = new MediaRecorder(stream);
+                    cardAudioChunks = [];
+
+                    cardMediaRecorder.ondataavailable = (event) => {
+                        cardAudioChunks.push(event.data);
+                    };
+
+                    cardMediaRecorder.onstop = async () => {
+                        const audioBlob = new Blob(cardAudioChunks, { type: 'audio/wav' });
+                        await uploadCardVoiceMessage(audioBlob);
+                    };
+
+                    cardMediaRecorder.start();
+                    cardIsRecording = true;
+                    const btn = document.getElementById('cardVoiceRecordBtn');
+                    btn.classList.add('recording');
+                    document.getElementById('cardVoiceRecordText').textContent = 'Recording...';
+                    showToast('Recording voice note...', 'info');
+                } catch (err) {
+                    console.error('Microphone error:', err);
+                    showToast('Microphone access denied', 'error');
+                }
+            } else {
+                cardMediaRecorder.stop();
+                cardIsRecording = false;
+                const btn = document.getElementById('cardVoiceRecordBtn');
+                btn.classList.remove('recording');
+                document.getElementById('cardVoiceRecordText').textContent = 'Voice';
+                showToast('Uploading voice note...', 'info');
+            }
+        }
+
+        async function uploadCardVoiceMessage(audioBlob) {
+            const db = firebase.firestore();
+            const userId = auth.currentUser.uid;
+            const playerId = currentCardMessagingPlayerId;
+
+            try {
+                // Upload to Cloudinary
+                const formData = new FormData();
+                formData.append('file', audioBlob);
+                formData.append('upload_preset', CLOUDINARY_UPLOAD_PRESET);
+                formData.append('resource_type', 'auto');
+
+                const cloudinaryResponse = await fetch(CLOUDINARY_API_URL, {
+                    method: 'POST',
+                    body: formData
+                });
+
+                if (!cloudinaryResponse.ok) {
+                    throw new Error('Upload failed');
+                }
+
+                const result = await cloudinaryResponse.json();
+
+                // Get sender's username
+                const senderDoc = await db.collection('players').doc(userId).get();
+                const senderUsername = senderDoc.exists ? senderDoc.data().realName : 'Unknown User';
+
+                // Check if this is a reply or original message
+                if (currentReplyToSenderId) {
+                    // VOICE REPLY: Save in BOTH locations
+                    // 1. Save in card owner's collection (playerId)
+                    await db.collection('players').doc(playerId).collection('cardMessages').add({
+                        senderId: userId,
+                        senderUsername: senderUsername,
+                        replyTo: currentReplyToSenderId,
+                        replyToUsername: currentReplyToSenderUsername,
+                        type: 'voice',
+                        audioUrl: result.secure_url,
+                        timestamp: firebase.firestore.Timestamp.now()
+                    });
+
+                    // 2. Save in original sender's collection (currentReplyToSenderId)
+                    await db.collection('players').doc(currentReplyToSenderId).collection('cardMessages').add({
+                        senderId: userId,
+                        senderUsername: senderUsername,
+                        replyTo: currentReplyToSenderId,
+                        replyToUsername: currentReplyToSenderUsername,
+                        type: 'voice',
+                        audioUrl: result.secure_url,
+                        isReplyFromOwner: true,
+                        timestamp: firebase.firestore.Timestamp.now()
+                    });
+
+                    showToast('Voice reply sent! 🎤', 'success');
+                    clearReplyContext();
+                } else {
+                    // ORIGINAL VOICE MESSAGE: Save to card owner's collection
+                    await db.collection('players').doc(playerId).collection('cardMessages').add({
+                        senderId: userId,
+                        senderUsername: senderUsername,
+                        type: 'voice',
+                        audioUrl: result.secure_url,
+                        timestamp: firebase.firestore.Timestamp.now()
+                    });
+
+                    showToast('Voice note sent! 🎤', 'success');
+                }
+            } catch (err) {
+                console.error('Error uploading voice note:', err);
+                showToast('Error uploading voice note', 'error');
+            }
+        }
+
+        // ===== REPLY MODAL SYSTEM =====
+        let replyMediaRecorder = null;
+        let replyAudioChunks = [];
+        let replyIsRecording = false;
+        let replyHasVoice = false;
+        let currentReplyData = {
+            senderId: null,
+            senderUsername: null,
+            messageType: null,
+            messageText: null,
+            audioUrl: null,
+            messageId: null
+        };
+
+        function openReplyModal(senderId, senderUsername, messageType, messageText, audioUrl, messageId) {
+            currentReplyData = {
+                senderId: senderId,
+                senderUsername: senderUsername,
+                messageType: messageType,
+                messageText: messageText,
+                audioUrl: audioUrl,
+                messageId: messageId
+            };
+
+            // Set sender name
+            document.getElementById('replySenderName').textContent = `From: ${senderUsername}`;
+
+            // Clear conversation thread
+            const thread = document.getElementById('replyConversationThread');
+            thread.innerHTML = '';
+
+            // Load conversation for this message
+            loadReplyConversation(senderId, senderUsername, messageType, messageText, audioUrl);
+
+            // Reset input
+            document.getElementById('replyMessageInput').value = '';
+            replyAudioChunks = [];
+            replyHasVoice = false;
+            replyIsRecording = false;
+            document.getElementById('replyVoiceBtn').classList.remove('recording');
+            document.getElementById('replyVoiceBtnText').textContent = 'Voice';
+            document.getElementById('replyVoiceIndicator').classList.remove('active');
+
+            // Open modal
+            document.getElementById('replyModalOverlay').classList.add('active');
+        }
+
+        function loadReplyConversation(senderId, senderUsername, messageType, messageText, audioUrl) {
+            const thread = document.getElementById('replyConversationThread');
+            const db = firebase.firestore();
+            const userId = auth.currentUser.uid;
+            const playerId = currentCardMessagingPlayerId;
+
+            // Show original message first
+            let originalMsg = document.createElement('div');
+            originalMsg.style.cssText = 'margin-bottom: 15px; padding: 12px; background: rgba(255,215,0,0.1); border-left: 3px solid var(--accent-gold); border-radius: 6px;';
+
+            let originalContent = '';
+            if (messageType === 'text') {
+                originalContent = `<div style="color: var(--text-white);">${messageText}</div>`;
+            } else if (messageType === 'voice') {
+                originalContent = `
+                    <div style="color: var(--text-gray); margin-bottom: 8px;">🎤 Voice Message</div>
+                    <audio controls style="width: 100%; height: 30px;">
+                        <source src="${audioUrl}" type="audio/wav">
+                    </audio>
+                `;
+            }
+
+            originalMsg.innerHTML = `
+                <div style="color: var(--text-gray); font-size: 0.8em; margin-bottom: 5px;">📨 ${senderUsername}</div>
+                ${originalContent}
+            `;
+            thread.appendChild(originalMsg);
+
+            // Load all messages in conversation between these two users
+            db.collection('players').doc(playerId).collection('cardMessages')
+                .orderBy('timestamp', 'asc')
+                .onSnapshot(snapshot => {
+                    // Clear and rebuild thread (keep original message)
+                    const originalElement = thread.querySelector('div:first-child');
+                    thread.innerHTML = '';
+                    thread.appendChild(originalElement);
+
+                    // Load all messages
+                    snapshot.forEach(doc => {
+                        const msg = doc.data();
+                        // Only show messages between these two users
+                        if ((msg.senderId === senderId && msg.senderUsername === senderUsername) ||
+                            (msg.senderId === userId)) {
+                            displayConversationMessage(thread, msg, userId, senderId);
+                        }
+                    });
+
+                    // Auto scroll to bottom
+                    thread.scrollTop = thread.scrollHeight;
+                });
+        }
+
+        function displayConversationMessage(thread, msg, userId, senderId) {
+            const isCurrentUser = msg.senderId === userId;
+            let msgDiv = document.createElement('div');
+
+            if (isCurrentUser) {
+                // Current user's message (RIGHT side - green)
+                msgDiv.style.cssText = 'margin-top: 12px; margin-left: auto; margin-right: 0; padding: 12px; background: rgba(0,255,136,0.15); border-left: none; border-right: 3px solid var(--accent-green); border-radius: 6px; max-width: 70%; text-align: right;';
+                msgDiv.innerHTML = `<div style="color: var(--accent-green); font-size: 0.8em; margin-bottom: 5px;">✓ You</div>`;
+            } else {
+                // Other user's message (LEFT side - gold)
+                msgDiv.style.cssText = 'margin-top: 12px; margin-left: 0; margin-right: auto; padding: 12px; background: rgba(255,215,0,0.12); border-left: 3px solid var(--accent-gold); border-right: none; border-radius: 6px; max-width: 70%;';
+                msgDiv.innerHTML = `<div style="color: var(--text-gray); font-size: 0.8em; margin-bottom: 5px;">📨 ${msg.senderUsername}</div>`;
+            }
+
+            // Show quoted reply if exists
+            if (msg.replyTo) {
+                msgDiv.innerHTML += `
+                    <div style="margin-bottom: 8px; padding: 8px; background: rgba(255,215,0,0.08); border-left: 2px solid rgba(255,215,0,0.5); border-radius: 4px; font-size: 0.85em; color: var(--text-gray);">
+                        ↳ Replying to ${msg.replyToUsername}
+                    </div>
+                `;
+            }
+
+            if (msg.type === 'text') {
+                msgDiv.innerHTML += `<div style="color: var(--text-white);">${msg.text}</div>`;
+            } else if (msg.type === 'voice') {
+                msgDiv.innerHTML += `
+                    <div style="color: var(--text-gray); margin-bottom: 8px;">🎤 Voice</div>
+                    <audio controls style="width: 100%; height: 28px;">
+                        <source src="${msg.audioUrl}" type="audio/wav">
+                    </audio>
+                `;
+            }
+
+            // Add reply button for received messages
+            if (!isCurrentUser && msg.type === 'text') {
+                msgDiv.innerHTML += `
+                    <button onclick="quoteReply('${msg.text.replace(/'/g, "\\'")}', '${msg.senderUsername.replace(/'/g, "\\'")}', '${msg.senderId}')" 
+                            style="margin-top: 8px; padding: 6px 12px; background: rgba(255,215,0,0.15); border: 1px solid rgba(255,215,0,0.3); color: var(--accent-gold); border-radius: 6px; cursor: pointer; font-size: 0.8em; transition: all 0.3s ease;"
+                            onmouseover="this.style.background='rgba(255,215,0,0.25)'; this.style.borderColor='var(--accent-gold)';"
+                            onmouseout="this.style.background='rgba(255,215,0,0.15)'; this.style.borderColor='rgba(255,215,0,0.3)';">
+                        💬 Quote Reply
+                    </button>
+                `;
+            }
+
+            thread.appendChild(msgDiv);
+        }
+
+        function quoteReply(messageText, senderName, senderId) {
+            const input = document.getElementById('replyMessageInput');
+            const quotedText = `> ${senderName}: ${messageText}\n\n`;
+            input.value = quotedText + input.value;
+            input.focus();
+            showToast('Quote added! 💬', 'success');
+        }
+
+        // ===== MESSAGE ACTIONS =====
+        function copyMessageToClipboard(messageId, messageText) {
+            if (!messageText) {
+                showToast('No text to copy', 'warning');
+                return;
+            }
+            navigator.clipboard.writeText(messageText).then(() => {
+                showToast('Message copied! 📋', 'success');
+            }).catch(err => {
+                console.error('Copy failed:', err);
+                showToast('Failed to copy message', 'error');
+            });
+        }
+
+        function deleteMessage(messageId) {
+            if (!confirm('Delete this message?')) {
+                return;
+            }
+
+            const db = firebase.firestore();
+            const playerId = currentCardMessagingPlayerId;
+            const userId = auth.currentUser.uid;
+
+            db.collection('players').doc(playerId).collection('cardMessages').doc(messageId).delete()
+                .then(() => {
+                    showToast('Message deleted 🗑️', 'success');
+                })
+                .catch(err => {
+                    console.error('Delete error:', err);
+                    showToast('Failed to delete message', 'error');
+                });
+        }
+
+        function closeReplyModal() {
+            document.getElementById('replyModalOverlay').classList.remove('active');
+
+            if (replyIsRecording) {
+                replyMediaRecorder?.stop();
+                replyIsRecording = false;
+            }
+
+            replyAudioChunks = [];
+            replyHasVoice = false;
+            currentReplyData = {
+                senderId: null,
+                senderUsername: null,
+                messageType: null,
+                messageText: null,
+                audioUrl: null,
+                messageId: null
+            };
+        }
+
+        async function toggleReplyVoiceRecord() {
+            if (!replyIsRecording) {
+                try {
+                    const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+                    replyMediaRecorder = new MediaRecorder(stream);
+                    replyAudioChunks = [];
+
+                    replyMediaRecorder.ondataavailable = (event) => {
+                        replyAudioChunks.push(event.data);
+                    };
+
+                    replyMediaRecorder.onstop = () => {
+                        replyHasVoice = true;
+                        showToast('Voice note recorded! ✅', 'success');
+                    };
+
+                    replyMediaRecorder.start();
+                    replyIsRecording = true;
+                    document.getElementById('replyVoiceBtn').classList.add('recording');
+                    document.getElementById('replyVoiceBtnText').textContent = 'Stop';
+                    document.getElementById('replyVoiceIndicator').classList.add('active');
+                    showToast('Recording...', 'info');
+                } catch (err) {
+                    console.error('Microphone error:', err);
+                    showToast('Microphone access denied', 'error');
+                }
+            } else {
+                replyMediaRecorder.stop();
+                replyIsRecording = false;
+                document.getElementById('replyVoiceBtn').classList.remove('recording');
+                document.getElementById('replyVoiceBtnText').textContent = 'Voice';
+                document.getElementById('replyVoiceIndicator').classList.remove('active');
+            }
+        }
+
+        async function sendReplyMessage() {
+            const messageText = document.getElementById('replyMessageInput').value.trim();
+
+            if (!messageText && !replyHasVoice) {
+                showToast('Type a message or record voice', 'warning');
+                return;
+            }
+
+            const db = firebase.firestore();
+            const userId = auth.currentUser.uid;
+            const playerId = currentCardMessagingPlayerId;
+
+            try {
+                const senderDoc = await db.collection('players').doc(userId).get();
+                const senderUsername = senderDoc.exists ? senderDoc.data().realName : 'Unknown User';
+
+                // Handle voice
+                if (replyHasVoice && replyAudioChunks.length > 0) {
+                    const audioBlob = new Blob(replyAudioChunks, { type: 'audio/wav' });
+                    const formData = new FormData();
+                    formData.append('file', audioBlob);
+                    formData.append('upload_preset', CLOUDINARY_UPLOAD_PRESET);
+
+                    const response = await fetch(CLOUDINARY_API_URL, { method: 'POST', body: formData });
+                    const result = await response.json();
+
+                    if (result.secure_url) {
+                        // Save voice to both collections
+                        await db.collection('players').doc(playerId).collection('cardMessages').add({
+                            senderId: userId,
+                            senderUsername: senderUsername,
+                            type: 'voice',
+                            audioUrl: result.secure_url,
+                            timestamp: firebase.firestore.Timestamp.now()
+                        });
+
+                        await db.collection('players').doc(currentReplyData.senderId).collection('cardMessages').add({
+                            senderId: userId,
+                            senderUsername: senderUsername,
+                            type: 'voice',
+                            audioUrl: result.secure_url,
+                            timestamp: firebase.firestore.Timestamp.now()
+                        });
+
+                        // Display in conversation
+                        displayReplyMessage(senderUsername, 'voice', result.secure_url);
+                    }
+                }
+
+                // Handle text
+                if (messageText) {
+                    await db.collection('players').doc(playerId).collection('cardMessages').add({
+                        senderId: userId,
+                        senderUsername: senderUsername,
+                        type: 'text',
+                        text: messageText,
+                        timestamp: firebase.firestore.Timestamp.now()
+                    });
+
+                    await db.collection('players').doc(currentReplyData.senderId).collection('cardMessages').add({
+                        senderId: userId,
+                        senderUsername: senderUsername,
+                        type: 'text',
+                        text: messageText,
+                        timestamp: firebase.firestore.Timestamp.now()
+                    });
+
+                    // Display in conversation
+                    displayReplyMessage(senderUsername, 'text', messageText);
+                }
+
+                // Clear and show success
+                document.getElementById('replyMessageInput').value = '';
+                replyAudioChunks = [];
+                replyHasVoice = false;
+                document.getElementById('replyVoiceBtn').classList.remove('recording');
+                document.getElementById('replyVoiceBtnText').textContent = 'Voice';
+                document.getElementById('replyVoiceIndicator').classList.remove('active');
+
+                showToast('Message sent! ✅', 'success');
+                loadCardMessages(playerId);
+
+            } catch (err) {
+                console.error('Error sending reply:', err);
+                showToast('Error: ' + err.message, 'error');
+            }
+        }
+
+        function displayReplyMessage(username, type, content) {
+            const thread = document.getElementById('replyConversationThread');
+            let replyMsg = document.createElement('div');
+            replyMsg.style.cssText = 'margin-top: 15px; padding: 12px; background: rgba(0,255,136,0.1); border-left: 3px solid var(--accent-green); border-radius: 6px;';
+
+            let content_html = '';
+            if (type === 'text') {
+                content_html = `<div style="color: var(--text-white);">${content}</div>`;
+            } else if (type === 'voice') {
+                content_html = `
+                    <div style="color: var(--text-gray); margin-bottom: 8px;">🎤 Your Voice</div>
+                    <audio controls style="width: 100%; height: 30px;">
+                        <source src="${content}" type="audio/wav">
+                    </audio>
+                `;
+            }
+
+            replyMsg.innerHTML = `
+                <div style="color: var(--accent-green); font-size: 0.8em; margin-bottom: 5px;">✓ You</div>
+                ${content_html}
+            `;
+
+            thread.appendChild(replyMsg);
+            thread.scrollTop = thread.scrollHeight;
+        }
+
+        // ===== EMOJI & STICKER FUNCTIONS =====
+        function toggleEmojiPicker() {
+            const picker = document.getElementById('emojiPicker');
+            const sticker = document.getElementById('stickerPicker');
+            sticker.classList.remove('active');
+
+            if (!picker.classList.contains('active')) {
+                picker.classList.add('active');
+                initializeEmojiPicker();
+            } else {
+                picker.classList.remove('active');
+            }
+        }
+
+        function toggleStickerPicker() {
+            const picker = document.getElementById('stickerPicker');
+            const emoji = document.getElementById('emojiPicker');
+            emoji.classList.remove('active');
+
+            picker.classList.toggle('active');
+            if (picker.classList.contains('active')) {
+                initializeStickerPicker();
+            }
+        }
+
+        function initializeEmojiPicker() {
+            const picker = document.getElementById('emojiPicker');
+            const emojis = [
+                '😀😃😄😁😆😅🤣😂',
+                '🥰😍🥳😘😗😚😙',
+                '🙂🤗🤩😍😇🥰',
+                '👍👏🙌💪👊✌️🤝',
+                '❤️🧡💛💚💙💜🖤',
+                '⚽🏀🎾🏐🏈⚾',
+                '🎉🎊🎈🎁🏆🥇',
+                '🔥💥✨🌟⭐💫'
+            ];
+
+            let html = '';
+            emojis.forEach(group => {
+                group.split('').forEach(emoji => {
+                    html += `<span onclick="insertEmoji('${emoji}')" style="font-size: 1.8em; cursor: pointer; padding: 8px; display: inline-block; border-radius: 6px; transition: all 0.2s; background: rgba(255,215,0,0.1);" onmouseover="this.style.background='rgba(255,215,0,0.2)'; this.style.transform='scale(1.2)'" onmouseout="this.style.transform='scale(1)'">${emoji}</span>`;
+                });
+            });
+
+            picker.innerHTML = html;
+        }
+
+        function initializeStickerPicker() {
+            const picker = document.getElementById('stickerPicker');
+            const stickers = [
+                '🎊', '🎉', '🎈', '🎁', '🏆', '🥇',
+                '⚽', '🏀', '🎾', '🏐', '🏈', '⚾',
+                '😂', '😍', '🤔', '😎', '🥳', '🤗',
+                '🔥', '💯', '✨', '⭐', '💥', '👏'
+            ];
+
+            let html = '';
+            stickers.forEach(sticker => {
+                html += `<div class="sticker-item" onclick="insertEmoji('${sticker}')">${sticker}</div>`;
+            });
+
+            picker.innerHTML = html;
+        }
+
+        function insertEmoji(emoji) {
+            const input = document.getElementById('replyMessageInput');
+            input.value += emoji;
+            input.focus();
         }
 
         function openPlayerAdvancedAnalysis(playerId) {
@@ -8157,236 +9552,9 @@
         }
 
         // ===== MESSAGING SYSTEM =====
-        let currentMessagingPlayerId = null;
-        let mediaRecorder = null;
-        let audioChunks = [];
-        let isRecording = false;
 
-        function openPlayerMessenger(playerId) {
-            if (!auth.currentUser) {
-                showToast('Please log in to send messages', 'warning');
-                return;
-            }
 
-            currentMessagingPlayerId = playerId;
-            const db = firebase.firestore();
-
-            // Get player name
-            db.collection('players').doc(playerId).get().then(doc => {
-                if (doc.exists) {
-                    const playerName = doc.data().realName || 'Player';
-                    document.getElementById('messengerTitle').textContent = `Message to ${playerName}`;
-                }
-            });
-
-            loadMessages(playerId);
-            document.getElementById('messengerOverlay').classList.add('active');
-        }
-
-        function closePlayerMessenger() {
-            document.getElementById('messengerOverlay').classList.remove('active');
-            currentMessagingPlayerId = null;
-            audioChunks = [];
-        }
-
-        function loadMessages(playerId) {
-            const db = firebase.firestore();
-            const userId = auth.currentUser.uid;
-            const conversationId = [userId, playerId].sort().join('_');
-
-            db.collection('messages').doc(conversationId).collection('chat').orderBy('timestamp').onSnapshot(snapshot => {
-                const messagesContainer = document.getElementById('messengerMessages');
-                messagesContainer.innerHTML = '';
-
-                snapshot.forEach(doc => {
-                    const msg = doc.data();
-                    const isOwn = msg.senderId === userId;
-
-                    const msgEl = document.createElement('div');
-                    msgEl.className = `messenger-message ${isOwn ? 'message-sent' : 'message-received'}`;
-
-                    if (msg.type === 'text') {
-                        msgEl.innerHTML = `
-                            ${msg.text}
-                            <div class="message-time">${new Date(msg.timestamp?.toDate()).toLocaleTimeString()}</div>
-                        `;
-                    } else if (msg.type === 'voice') {
-                        msgEl.innerHTML = `
-                            <div class="message-voice">
-                                <i class="fas fa-volume-up"></i>
-                                <audio controls style="max-width: 100%;">
-                                    <source src="${msg.audioUrl}" type="audio/wav">
-                                </audio>
-                            </div>
-                            <div class="message-time">${new Date(msg.timestamp?.toDate()).toLocaleTimeString()}</div>
-                        `;
-                    }
-
-                    messagesContainer.appendChild(msgEl);
-
-                    // Mark as read if received message
-                    if (!isOwn && !msg.read) {
-                        db.collection('messages').doc(conversationId).collection('chat').doc(doc.id).update({ read: true });
-                    }
-                });
-
-                // Scroll to bottom
-                messagesContainer.scrollTop = messagesContainer.scrollHeight;
-            });
-        }
-
-        async function sendMessage() {
-            const messageText = document.getElementById('messageInput').value.trim();
-            if (!messageText) {
-                showToast('Please type a message', 'warning');
-                return;
-            }
-
-            const db = firebase.firestore();
-            const userId = auth.currentUser.uid;
-            const conversationId = [userId, currentMessagingPlayerId].sort().join('_');
-
-            try {
-                await db.collection('messages').doc(conversationId).collection('chat').add({
-                    senderId: userId,
-                    type: 'text',
-                    text: messageText,
-                    timestamp: new Date(),
-                    read: false
-                });
-
-                document.getElementById('messageInput').value = '';
-                showToast('Message sent! 💬', 'success');
-            } catch (err) {
-                console.error('Error sending message:', err);
-                showToast('Error sending message', 'error');
-            }
-        }
-
-        async function toggleVoiceRecord() {
-            if (!isRecording) {
-                // Start recording
-                try {
-                    const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-                    mediaRecorder = new MediaRecorder(stream);
-                    audioChunks = [];
-
-                    mediaRecorder.ondataavailable = (event) => {
-                        audioChunks.push(event.data);
-                    };
-
-                    mediaRecorder.onstop = async () => {
-                        const audioBlob = new Blob(audioChunks, { type: 'audio/wav' });
-                        await uploadVoiceMessage(audioBlob);
-                    };
-
-                    mediaRecorder.start();
-                    isRecording = true;
-                    const btn = document.getElementById('voiceRecordBtn');
-                    btn.classList.add('recording');
-                    document.getElementById('voiceRecordText').textContent = 'Recording...';
-                    showToast('Recording voice note...', 'info');
-                } catch (err) {
-                    console.error('Microphone error:', err);
-                    showToast('Microphone access denied', 'error');
-                }
-            } else {
-                // Stop recording
-                mediaRecorder.stop();
-                isRecording = false;
-                const btn = document.getElementById('voiceRecordBtn');
-                btn.classList.remove('recording');
-                document.getElementById('voiceRecordText').textContent = 'Voice Note';
-                showToast('Uploading voice note...', 'info');
-            }
-        }
-
-        async function uploadVoiceMessage(audioBlob) {
-            const db = firebase.firestore();
-            const userId = auth.currentUser.uid;
-            const conversationId = [userId, currentMessagingPlayerId].sort().join('_');
-
-            try {
-                // Upload to Cloudinary
-                const formData = new FormData();
-                formData.append('file', audioBlob);
-                formData.append('upload_preset', CLOUDINARY_UPLOAD_PRESET);
-                formData.append('resource_type', 'auto');
-
-                const cloudinaryResponse = await fetch(CLOUDINARY_API_URL, {
-                    method: 'POST',
-                    body: formData
-                });
-
-                if (!cloudinaryResponse.ok) {
-                    throw new Error('Upload failed');
-                }
-
-                const result = await cloudinaryResponse.json();
-
-                // Save message to Firebase
-                await db.collection('messages').doc(conversationId).collection('chat').add({
-                    senderId: userId,
-                    type: 'voice',
-                    audioUrl: result.secure_url,
-                    timestamp: new Date(),
-                    read: false
-                });
-
-                showToast('Voice note sent! 🎤', 'success');
-            } catch (err) {
-                console.error('Error uploading voice note:', err);
-                showToast('Error uploading voice note', 'error');
-            }
-        }
-
-        // ===== SHARE & RATING SYSTEM =====
-        function sharePlayerProfile(playerId) {
-            const shareUrl = `${window.location.origin}/player/${playerId}`;
-            const shareText = `Check out this DLS Draft player! 🏆`;
-
-            if (navigator.share) {
-                navigator.share({
-                    title: 'DLS Draft Player',
-                    text: shareText,
-                    url: shareUrl
-                });
-            } else {
-                // Fallback: copy to clipboard
-                navigator.clipboard.writeText(shareUrl).then(() => {
-                    showToast('Player link copied to clipboard! 📋', 'success');
-                }).catch(() => {
-                    showToast('Could not copy link', 'error');
-                });
-            }
-        }
-
-        function loadPlayerFromShare() {
-            // Check if URL has /player/{userId}
-            const pathArray = window.location.pathname.split('/');
-            if (pathArray[1] === 'player' && pathArray[2]) {
-                const playerId = pathArray[2];
-                loadSharedPlayerProfile(playerId);
-            }
-        }
-
-        function loadSharedPlayerProfile(playerId) {
-            const db = firebase.firestore();
-            db.collection('players').doc(playerId).get().then(doc => {
-                if (doc.exists) {
-                    const player = doc.data();
-                    openPlayerDetailsModal(playerId, player);
-                } else {
-                    showToast('Player not found', 'error');
-                }
-            }).catch(err => {
-                console.error('Error loading player:', err);
-                showToast('Error loading player', 'error');
-            });
-        }
-
-        // Check for shared player on page load
-        window.addEventListener('load', loadPlayerFromShare);
+        // ===== RATING SYSTEM =====
 
         function openPlayerEditFromDetails(playerId) {
             closePlayerDetailsModal();
@@ -8505,33 +9673,69 @@
             if (popup) popup.remove();
         }
 
-        function submitPlayerRating(playerId, rating) {
-            if (!auth.currentUser) {
-                showToast('Please log in to rate players', 'error');
-                return;
+        // Generate or retrieve device ID for anonymous ratings
+        function getDeviceId() {
+            let deviceId = localStorage.getItem('dlsDraftDeviceId');
+            if (!deviceId) {
+                deviceId = 'device_' + Math.random().toString(36).substr(2, 9) + '_' + Date.now();
+                localStorage.setItem('dlsDraftDeviceId', deviceId);
             }
+            return deviceId;
+        }
 
+        function submitPlayerRating(playerId, rating) {
             if (rating === 0) {
                 showToast('Please select a rating', 'warning');
                 return;
             }
 
             const db = firebase.firestore();
-            const ratingId = auth.currentUser.uid + '-' + new Date().getTime();
+            const isAuthenticated = auth.currentUser !== null;
+            const deviceId = getDeviceId();
 
-            db.collection('players').doc(playerId).collection('ratings').doc(ratingId).set({
-                userId: auth.currentUser.uid,
-                rating: rating,
-                timestamp: new Date().toISOString(),
-                ratedAt: firebase.firestore.FieldValue.serverTimestamp()
-            }).then(() => {
-                showToast(`Rating submitted! ⭐${rating}`, 'success');
-                closePlayerRatingPopup();
-                // Refresh the modal
-                viewPlayerDetails(playerId);
+            // For authenticated users: use their UID
+            // For anonymous users: use device ID
+            const ratingId = isAuthenticated
+                ? auth.currentUser.uid + '-' + new Date().getTime()
+                : deviceId + '-' + new Date().getTime();
+
+            // Check if user already gave a 5-star rating from this device/account
+            const ratingQuery = isAuthenticated
+                ? db.collection('players').doc(playerId).collection('ratings').where('userId', '==', auth.currentUser.uid).where('rating', '==', 5)
+                : db.collection('players').doc(playerId).collection('ratings').where('deviceId', '==', deviceId).where('rating', '==', 5);
+
+            ratingQuery.get().then(snapshot => {
+                if (rating === 5 && snapshot.docs.length > 0) {
+                    showToast('You already gave this player a 5-star rating!', 'warning');
+                    return;
+                }
+
+                const ratingData = {
+                    rating: rating,
+                    timestamp: new Date().toISOString(),
+                    ratedAt: firebase.firestore.FieldValue.serverTimestamp()
+                };
+
+                if (isAuthenticated) {
+                    ratingData.userId = auth.currentUser.uid;
+                    ratingData.userName = auth.currentUser.displayName || auth.currentUser.email || 'Anonymous';
+                } else {
+                    ratingData.deviceId = deviceId;
+                    ratingData.isAnonymous = true;
+                }
+
+                db.collection('players').doc(playerId).collection('ratings').doc(ratingId).set(ratingData).then(() => {
+                    showToast(`Rating submitted! ⭐${rating}`, 'success');
+                    closePlayerRatingPopup();
+                    // Refresh the modal
+                    viewPlayerDetails(playerId);
+                }).catch(err => {
+                    console.error('Error submitting rating:', err);
+                    showToast('Error submitting rating', 'error');
+                });
             }).catch(err => {
-                console.error('Error submitting rating:', err);
-                showToast('Error submitting rating', 'error');
+                console.error('Error checking existing ratings:', err);
+                showToast('Error checking ratings', 'error');
             });
         }
 
@@ -9580,7 +10784,8 @@
                             <div
                                 style="font-size: 0.85em; color: var(--accent-gold); margin-bottom: 10px; font-weight: 600;">
                                 🏆 HOST/COACH</div>
-                            <img id="teamAHostImg" src="https://via.placeholder.com/80?text=Host"
+                            <img id="teamAHostImg"
+                                src="data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%2280%22 height=%2280%22%3E%3Crect fill=%22%23333%22 width=%2280%22 height=%2280%22 rx=%228%22/%3E%3Ctext x=%2240%22 y=%2245%22 font-size=%2224%22 fill=%22%23999%22 text-anchor=%22middle%22 dominant-baseline=%22middle%22%3EHost%3C/text%3E%3C/svg%3E"
                                 style="width: 80px; height: 80px; border-radius: 8px; object-fit: cover; margin: 0 auto 10px; display: block;">
                             <div id="teamAHostName"
                                 style="color: var(--text-white); font-weight: 600; margin-bottom: 3px; font-size: 0.9em;">
@@ -9641,7 +10846,8 @@
                             <div
                                 style="font-size: 0.85em; color: var(--accent-gold); margin-bottom: 10px; font-weight: 600;">
                                 🏆 HOST/COACH</div>
-                            <img id="teamBHostImg" src="https://via.placeholder.com/80?text=Host"
+                            <img id="teamBHostImg"
+                                src="data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%2280%22 height=%2280%22%3E%3Crect fill=%22%23333%22 width=%2280%22 height=%2280%22 rx=%228%22/%3E%3Ctext x=%2240%22 y=%2245%22 font-size=%2224%22 fill=%22%23999%22 text-anchor=%22middle%22 dominant-baseline=%22middle%22%3EHost%3C/text%3E%3C/svg%3E"
                                 style="width: 80px; height: 80px; border-radius: 8px; object-fit: cover; margin: 0 auto 10px; display: block;">
                             <div id="teamBHostName"
                                 style="color: var(--text-white); font-weight: 600; margin-bottom: 3px; font-size: 0.9em;">
@@ -10115,26 +11321,89 @@
         </div>
     </div>
 
-    <!-- MESSENGER MODAL -->
-    <div class="messenger-overlay" id="messengerOverlay">
-        <div class="messenger-modal">
-            <div class="messenger-header">
-                <h2 class="messenger-title" id="messengerTitle">Message Player</h2>
-                <button class="messenger-close" onclick="closePlayerMessenger()">×</button>
+    <!-- CARD MESSAGING MODAL -->
+    <div class="card-messaging-overlay" id="cardMessagingOverlay">
+        <div class="card-messaging-modal">
+            <div class="card-messaging-header">
+                <h2 class="card-messaging-title" id="cardMessagingTitle">Send Message</h2>
+                <button class="card-messaging-close" onclick="closeCardMessaging()">×</button>
             </div>
-            <div class="messenger-messages" id="messengerMessages">
-                <!-- Messages will be loaded here -->
+            <div class="card-messages-list" id="cardMessagesList">
+                <!-- Messages will be displayed here -->
             </div>
-            <div class="messenger-input-area">
-                <textarea class="messenger-input" id="messageInput" placeholder="Type your message..."></textarea>
-                <div class="messenger-buttons">
-                    <button class="messenger-btn messenger-voice-btn" id="voiceRecordBtn" onclick="toggleVoiceRecord()">
-                        <i class="fas fa-microphone"></i> <span id="voiceRecordText">Voice Note</span>
+            <div class="card-messaging-input-area">
+                <textarea class="card-messaging-input" id="cardMessageInput"
+                    placeholder="Type your message..."></textarea>
+                <div class="card-messaging-buttons">
+                    <button class="card-messaging-btn card-messaging-voice-btn" id="cardVoiceRecordBtn"
+                        onclick="toggleCardVoiceRecord()">
+                        <i class="fas fa-microphone"></i> <span id="cardVoiceRecordText">Voice</span>
                     </button>
-                    <button class="messenger-btn messenger-send-btn" onclick="sendMessage()">
+                    <button class="card-messaging-btn card-messaging-send-btn" onclick="sendCardMessage()">
                         <i class="fas fa-paper-plane"></i> Send
                     </button>
                 </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- REPLY POPUP - WhatsApp Style -->
+    <div class="reply-modal-overlay" id="replyModalOverlay">
+        <div class="reply-modal-container">
+            <div class="reply-modal-header">
+                <div>
+                    <div class="reply-modal-title">💬 Reply</div>
+                    <div class="reply-modal-sender-name" id="replySenderName">User</div>
+                </div>
+                <button class="reply-modal-close-btn" onclick="closeReplyModal()">×</button>
+            </div>
+
+            <div class="reply-modal-content">
+                <!-- Conversation Thread -->
+                <div id="replyConversationThread"
+                    style="max-height: 400px; overflow-y: auto; margin-bottom: 20px; padding: 15px; background: rgba(0,0,0,0.3); border-radius: 10px; display: flex; flex-direction: column; gap: 10px;">
+                    <!-- Messages will load here -->
+                </div>
+
+                <!-- Voice Recording Indicator -->
+                <div class="reply-voice-indicator" id="replyVoiceIndicator">
+                    <i class="fas fa-microphone"></i> Recording voice note... Click Stop to finish
+                </div>
+
+                <!-- Text Input Section -->
+                <div class="reply-input-section">
+                    <label class="reply-input-label"><i class="fas fa-comment"></i> Your Message</label>
+                    <textarea class="reply-textarea" id="replyMessageInput"
+                        placeholder="Type your message..."></textarea>
+                </div>
+
+                <!-- Emoji & Sticker Buttons -->
+                <div class="reply-emoji-sticker-container">
+                    <button class="reply-emoji-btn" onclick="toggleEmojiPicker()">
+                        <i class="fas fa-smile"></i> Emoji
+                    </button>
+                    <button class="reply-sticker-btn" onclick="toggleStickerPicker()">
+                        <i class="fas fa-star"></i> Stickers
+                    </button>
+                </div>
+
+                <!-- Emoji Picker -->
+                <div id="emojiPicker" class="emoji-picker"></div>
+
+                <!-- Sticker Picker -->
+                <div id="stickerPicker" class="sticker-picker"></div>
+
+                <!-- Buttons -->
+                <div class="reply-button-group">
+                    <button class="reply-btn" id="replyVoiceBtn" onclick="toggleReplyVoiceRecord()">
+                        <i class="fas fa-microphone"></i> <span id="replyVoiceBtnText">Voice</span>
+                    </button>
+                </div>
+
+                <!-- Send Button -->
+                <button class="reply-send-btn" onclick="sendReplyMessage()">
+                    <i class="fas fa-paper-plane"></i> Send
+                </button>
             </div>
         </div>
     </div>
@@ -10170,6 +11439,25 @@
                 </div>
             </div>
             <button class="more-menu-close" onclick="closeMoreMenu()">Close</button>
+        </div>
+    </div>
+
+    <!-- SHARE LINK MODAL -->
+    <div class="share-link-overlay" id="shareLinkOverlay">
+        <div class="share-link-container">
+            <h2 class="share-link-title">Share Player Profile</h2>
+            <p class="share-link-description">Share this link to let others view this player's card and leave ratings:
+            </p>
+            <div class="share-link-input-group">
+                <input type="text" class="share-link-input" readonly>
+                <button class="share-link-copy-btn" onclick="copyShareLink()">
+                    <i class="fas fa-copy"></i> Copy Link
+                </button>
+            </div>
+            <p style="color: var(--text-gray); font-size: 0.85em; margin-top: 15px;">
+                🔓 Anyone with this link can view the profile and rate the player
+            </p>
+            <button class="share-link-close-btn" onclick="closeShareLinkModal()">Close</button>
         </div>
     </div>
 
