@@ -476,14 +476,13 @@
         let playerData = null;
 
         // ===== INITIALIZATION =====
-        window.addEventListener('load', () => {
-            initializePage();
-        });
-
         function initializePage() {
             // Get playerId from URL
             const urlParams = new URLSearchParams(window.location.search);
             currentPlayerId = urlParams.get('playerId') || urlParams.get('id') || extractPlayerIdFromPath();
+
+            console.log('Current Player ID:', currentPlayerId);
+            console.log('URL:', window.location.href);
 
             if (!currentPlayerId) {
                 showError('No player ID provided. Invalid link.');
@@ -491,6 +490,13 @@
             }
 
             loadPlayerCard(currentPlayerId);
+        }
+
+        // Initialize immediately when DOM is ready
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', initializePage);
+        } else {
+            initializePage();
         }
 
         function extractPlayerIdFromPath() {
