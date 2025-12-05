@@ -402,7 +402,7 @@
                         <div class="stat-value" id="playerPosition">-</div>
                     </div>
                     <div class="stat-item">
-                        <div class="stat-label">Jersey #</div>
+                        <div class="stat-label">Time Strength</div>
                         <div class="stat-value" id="playerNumber">-</div>
                     </div>
                     <div class="stat-item">
@@ -554,12 +554,75 @@
 
             // Set stats
             document.getElementById('playerPosition').textContent = player.position || player.role || '-';
-            document.getElementById('playerNumber').textContent = player.jerseyNumber || player.number || '-';
+            document.getElementById('playerNumber').textContent = player.timeStrength || '-';
             document.getElementById('teamScore').textContent = player.teamScore || '-';
-            document.getElementById('winRate').textContent = player.winRate || '-';
+            document.getElementById('winRate').textContent = (player.winRate || 0) + '%';
 
             // Show card
             document.getElementById('cardContainer').style.display = 'block';
+            
+            // Add extended stats section
+            addExtendedStats(player);
+        }
+
+        function addExtendedStats(player) {
+            const statsGrid = document.querySelector('.player-stats');
+            
+            // Add Loss Rate stat
+            const lossRateStat = document.createElement('div');
+            lossRateStat.className = 'stat-item';
+            lossRateStat.innerHTML = `
+                <div class="stat-label">Loss Rate</div>
+                <div class="stat-value">${(player.lossRate || 0)}%</div>
+            `;
+            statsGrid.appendChild(lossRateStat);
+
+            // Add Best Players stat
+            const bestPlayersStat = document.createElement('div');
+            bestPlayersStat.className = 'stat-item';
+            bestPlayersStat.innerHTML = `
+                <div class="stat-label">Best Players</div>
+                <div class="stat-value">${player.bestPlayers || '-'}</div>
+            `;
+            statsGrid.appendChild(bestPlayersStat);
+
+            // Add Best Cup stat
+            const bestCupStat = document.createElement('div');
+            bestCupStat.className = 'stat-item';
+            bestCupStat.innerHTML = `
+                <div class="stat-label">Best Cup</div>
+                <div class="stat-value">${player.bestCup || '-'}</div>
+            `;
+            statsGrid.appendChild(bestCupStat);
+
+            // Add images section if they exist
+            if (player.clubImage || player.teamImage) {
+                const imagesContainer = document.createElement('div');
+                imagesContainer.style.cssText = 'display: flex; gap: 15px; justify-content: center; margin-top: 25px; flex-wrap: wrap;';
+                
+                if (player.clubImage) {
+                    const clubDiv = document.createElement('div');
+                    clubDiv.style.cssText = 'text-align: center;';
+                    clubDiv.innerHTML = `
+                        <img src="${player.clubImage}" alt="Club" style="width: 80px; height: 80px; border-radius: 10px; border: 2px solid var(--accent-gold); object-fit: cover;">
+                        <div style="font-size: 0.75em; color: var(--text-gray); margin-top: 5px; font-weight: 600;">Club</div>
+                    `;
+                    imagesContainer.appendChild(clubDiv);
+                }
+                
+                if (player.teamImage) {
+                    const teamDiv = document.createElement('div');
+                    teamDiv.style.cssText = 'text-align: center;';
+                    teamDiv.innerHTML = `
+                        <img src="${player.teamImage}" alt="Team" style="width: 80px; height: 80px; border-radius: 10px; border: 2px solid var(--accent-gold); object-fit: cover;">
+                        <div style="font-size: 0.75em; color: var(--text-gray); margin-top: 5px; font-weight: 600;">Team</div>
+                    `;
+                    imagesContainer.appendChild(teamDiv);
+                }
+                
+                const actionButtons = document.querySelector('.action-buttons');
+                actionButtons.parentNode.insertBefore(imagesContainer, actionButtons);
+            }
         }
 
         // ===== LOAD RATINGS =====
