@@ -492,6 +492,13 @@
             loadPlayerCard(currentPlayerId);
         }
 
+        // Enable anonymous auth
+        auth.signInAnonymously().catch(err => {
+            console.error('Anonymous sign-in error:', err);
+            // Continue anyway - Firestore should work with default rules
+            initializePage();
+        });
+
         // Initialize immediately when DOM is ready
         if (document.readyState === 'loading') {
             document.addEventListener('DOMContentLoaded', initializePage);
