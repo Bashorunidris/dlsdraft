@@ -5263,6 +5263,7 @@
             <button class="nav-btn" onclick="activeNavBtn(this)">Tables</button>
             <button class="nav-btn" onclick="openPlayersRatingModal()"><i class="fas fa-star"></i> Players
                 Rating</button>
+            <button class="nav-btn" onclick="openLivestreamCodeShopModal()">📹 Livestream Codes</button>
             <button class="nav-btn" onclick="activeNavBtn(this)">Online Linking</button>
             <button class="nav-btn" onclick="activeNavBtn(this)">Communities</button>
             <button class="nav-btn" onclick="openMoreMenu()"><i class="fas fa-ellipsis-h"></i> More</button>
@@ -5352,12 +5353,27 @@
         <div class="profile-modal">
             <button class="profile-close" onclick="closeProfileModal()">×</button>
             <div class="profile-header">
-                <div class="profile-avatar" onclick="document.getElementById('profileAvatarUpload').click()">👤</div>
-                <input type="file" id="profileAvatarUpload" class="profile-avatar-upload" accept="image/*">
                 <h2 style="color: var(--accent-gold); margin-bottom: 10px;" id="profileName">User Name</h2>
                 <p style="color: var(--text-gray);" id="profileEmail">user@email.com</p>
             </div>
             <form class="profile-form">
+                <!-- PLAYER IMAGE UPLOAD -->
+                <div class="profile-form-group">
+                    <label style="font-size: 1.1em; margin-bottom: 15px; display: block;">Player Image</label>
+                    <div style="display: flex; flex-direction: column; align-items: center; gap: 15px;">
+                        <div id="playerImagePreview" style="width: 150px; height: 150px; border-radius: 15px; border: 3px solid rgba(255, 215, 0, 0.4); display: flex; align-items: center; justify-content: center; background: rgba(255, 215, 0, 0.1); overflow: hidden;">
+                            <span style="font-size: 3em; color: var(--accent-gold);">📷</span>
+                        </div>
+                        <div style="width: 100%;">
+                            <input type="file" id="playerImageUpload" class="profile-avatar-upload" accept="image/*" onchange="previewPlayerImage(event)">
+                            <button type="button" class="btn" style="width: 100%; margin-bottom: 8px; padding: 12px; font-size: 0.95em;" onclick="document.getElementById('playerImageUpload').click()">
+                                <i class="fas fa-upload"></i> Choose Player Image
+                            </button>
+                            <small id="playerImageStatus" style="color: var(--text-gray); display: block; text-align: center;">No image selected</small>
+                        </div>
+                    </div>
+                </div>
+                
                 <div class="profile-form-group">
                     <label>Full Name</label>
                     <input type="text" id="inputName" placeholder="Enter your full name">
@@ -5370,9 +5386,13 @@
                     <label>Bio</label>
                     <textarea id="inputBio" placeholder="Tell us about yourself" rows="4"></textarea>
                 </div>
+                
                 <div class="profile-modal-buttons">
                     <button type="button" class="profile-modal-btn profile-modal-save" onclick="saveProfileChanges()">💾
                         Save Changes</button>
+                    <button type="button" class="profile-modal-btn" onclick="openLivestreamCodeShopModal()"
+                        style="background: rgba(0, 212, 255, 0.2); border: 1px solid rgba(0, 212, 255, 0.4); color: #00d4ff;">📹
+                        Livestream Codes</button>
                     <button type="button" class="profile-modal-btn" onclick="openWalletModal()"
                         style="background: rgba(0, 255, 136, 0.2); border: 1px solid rgba(0, 255, 136, 0.4); color: var(--accent-green);">💰
                         Wallet</button>
@@ -5384,6 +5404,79 @@
                         onclick="closeProfileModal()">✕ Close</button>
                 </div>
             </form>
+        </div>
+    </div>
+
+    <!-- LIVESTREAM CODE SHOP MODAL -->
+    <div class="wallet-modal-overlay" id="livestreamCodeShopOverlay">
+        <div class="wallet-modal" style="max-width: 800px;">
+            <button class="wallet-close" onclick="closeLivestreamCodeShopModal()">×</button>
+            <div class="wallet-header">
+                <h2>📹 Livestream Code Shop</h2>
+                <p style="color: var(--text-gray); margin-top: 10px; font-size: 0.95em;">Select a match to get a livestream code (FREE or PAID)</p>
+            </div>
+
+            <div class="wallet-content">
+                <!-- Match Selection -->
+                <div style="margin-bottom: 25px;">
+                    <label style="color: var(--text-gray); font-weight: 600; display: block; margin-bottom: 12px;">Available Matches</label>
+                    <div id="livestreamMatchesList" style="display: grid; grid-template-columns: 1fr; gap: 12px; max-height: 300px; overflow-y: auto;">
+                        <div style="text-align: center; color: var(--text-gray); padding: 20px;">Loading matches...</div>
+                    </div>
+                </div>
+
+                <!-- Selected Match Info -->
+                <div id="selectedMatchInfo" style="display: none; background: rgba(255, 215, 0, 0.1); border: 1px solid rgba(255, 215, 0, 0.3); border-radius: 12px; padding: 20px; margin-bottom: 25px;">
+                    <h3 style="color: var(--accent-gold); margin-bottom: 15px;">Selected Match</h3>
+                    <div style="display: flex; justify-content: space-between; align-items: center;">
+                        <div>
+                            <div id="selectedMatchName" style="font-size: 1.2em; font-weight: 600; color: var(--text-white); margin-bottom: 8px;"></div>
+                            <div style="color: var(--text-gray); font-size: 0.9em;">
+                                <span id="selectedMatchDate"></span> | <span id="selectedMatchType"></span>
+                            </div>
+                        </div>
+                        <div style="text-align: right;">
+                            <div style="color: var(--text-gray); font-size: 0.85em; margin-bottom: 5px;">Price</div>
+                            <div id="selectedMatchPrice" style="font-size: 1.3em; font-weight: 700; color: var(--accent-gold);"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Code Type Selection (shows if paid) -->
+                <div id="paidCodeOptions" style="display: none; background: rgba(0, 255, 136, 0.1); border: 1px solid rgba(0, 255, 136, 0.3); border-radius: 12px; padding: 20px; margin-bottom: 25px;">
+                    <h3 style="color: var(--accent-green); margin-bottom: 15px;">Payment Required</h3>
+                    <div style="margin-bottom: 15px;">
+                        <div style="color: var(--text-gray); margin-bottom: 10px;">
+                            💰 Amount: <span id="paymentAmount" style="color: var(--accent-gold); font-weight: 600;"></span>
+                        </div>
+                        <div style="color: var(--text-gray); margin-bottom: 10px;">
+                            💳 Your Wallet: <span id="walletBalance" style="color: var(--accent-green); font-weight: 600;"></span>
+                        </div>
+                    </div>
+                    <div id="insufficientFundsMsg" style="display: none; color: #ff6b6b; font-weight: 600; margin-bottom: 15px; padding: 12px; background: rgba(255, 107, 107, 0.1); border-radius: 8px;">
+                        ❌ Insufficient funds. Please deposit to continue.
+                    </div>
+                </div>
+
+                <!-- Get Code Button -->
+                <button id="getCodeBtn" class="wallet-btn" onclick="getLivestreamCode()" style="width: 100%; padding: 16px; background: rgba(0, 212, 255, 0.2); border: 1px solid rgba(0, 212, 255, 0.4); color: #00d4ff; border-radius: 10px; cursor: pointer; font-weight: 600; font-size: 1em; display: none;">
+                    Get Code
+                </button>
+
+                <!-- Code Display (after getting code) -->
+                <div id="codeDisplay" style="display: none; background: rgba(0, 212, 255, 0.15); border: 2px solid rgba(0, 212, 255, 0.4); border-radius: 12px; padding: 25px; text-align: center;">
+                    <div style="color: var(--text-gray); font-size: 0.9em; margin-bottom: 15px;">Your Livestream Code</div>
+                    <div id="displayedCode" style="font-size: 2.5em; font-weight: 900; color: var(--accent-gold); font-family: 'Courier New', monospace; letter-spacing: 3px; margin-bottom: 15px;">FDLS0000</div>
+                    <div style="display: flex; gap: 10px;">
+                        <button class="wallet-btn" onclick="copyCodeToClipboard()" style="flex: 1; padding: 12px; background: rgba(0, 212, 255, 0.2); border: 1px solid rgba(0, 212, 255, 0.4); color: #00d4ff; border-radius: 8px; cursor: pointer; font-weight: 600;">📋 Copy Code</button>
+                        <button class="wallet-btn" onclick="downloadCode()" style="flex: 1; padding: 12px; background: rgba(0, 255, 136, 0.2); border: 1px solid rgba(0, 255, 136, 0.4); color: var(--accent-green); border-radius: 8px; cursor: pointer; font-weight: 600;">⬇️ Download</button>
+                    </div>
+                </div>
+            </div>
+
+            <div style="margin-top: 30px; padding-top: 20px; border-top: 1px solid rgba(255, 215, 0, 0.1);">
+                <button class="wallet-btn" onclick="closeLivestreamCodeShopModal()" style="width: 100%;">Close</button>
+            </div>
         </div>
     </div>
 
@@ -5943,6 +6036,7 @@
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-storage-compat.js"></script>
     <script src="https://checkout.flutterwave.com/v3.js"></script>
 
     <script>
@@ -6058,7 +6152,8 @@
                 profile: {
                     name: userData.name || 'User',
                     bio: userData.bio || '',
-                    avatar: userData.avatar || '👤'
+                    avatar: userData.avatar || '👤',
+                    playerPicture: userData.playerPicture || null
                 },
                 updatedAt: new Date().toISOString()
             }, { merge: true }).catch(error => {
@@ -6075,6 +6170,7 @@
                     userData.name = (data.profile && data.profile.name) || 'User';
                     userData.bio = (data.profile && data.profile.bio) || '';
                     userData.avatar = (data.profile && data.profile.avatar) || '👤';
+                    userData.playerPicture = (data.profile && data.profile.playerPicture) || null;
                     console.log('✓ User data loaded from Firebase:', userData);
                     // Update profile display on page
                     updateProfileDisplay();
@@ -6117,21 +6213,442 @@
             document.getElementById('inputBio').value = userData.bio;
             document.getElementById('profileName').textContent = userData.name;
             document.getElementById('profileEmail').textContent = auth.currentUser.email;
+            loadPlayerImagePreview();
         }
 
         // Close profile modal
-        function closeProfileModal() {
-            document.getElementById('profileModalOverlay').classList.remove('active');
+         function closeProfileModal() {
+             document.getElementById('profileModalOverlay').classList.remove('active');
+             // Reset player image file and preview
+             playerImageFile = null;
+             const preview = document.getElementById('playerImagePreview');
+             if (preview) {
+                 if (userData && userData.playerPicture) {
+                     preview.innerHTML = `<img src="${userData.playerPicture}" style="width: 100%; height: 100%; object-fit: cover;">`;
+                 } else {
+                     preview.innerHTML = '<span style="font-size: 3em; color: var(--accent-gold);">📷</span>';
+                 }
+             }
+             document.getElementById('playerImageStatus').textContent = 'No image selected';
+         }
+
+         // Open Livestream Code Shop Modal
+         function openLivestreamCodeShopModal() {
+             closeProfileModal();
+             
+             // Load wallet data first, then open modal and load matches
+             loadWalletDataFromFirebase().then(() => {
+                 console.log('💰 Wallet data loaded. Balance:', walletData.balance);
+                 document.getElementById('livestreamCodeShopOverlay').classList.add('active');
+                 loadAvailableMatchesForLivestream();
+             }).catch(error => {
+                 console.error('Error loading wallet:', error);
+                 document.getElementById('livestreamCodeShopOverlay').classList.add('active');
+                 loadAvailableMatchesForLivestream();
+             });
+         }
+
+         // Close Livestream Code Shop Modal
+         function closeLivestreamCodeShopModal() {
+             document.getElementById('livestreamCodeShopOverlay').classList.remove('active');
+             // Reset the form
+             document.getElementById('selectedMatchInfo').style.display = 'none';
+             document.getElementById('paidCodeOptions').style.display = 'none';
+             document.getElementById('getCodeBtn').style.display = 'none';
+             document.getElementById('codeDisplay').style.display = 'none';
+             document.getElementById('livestreamMatchesList').innerHTML = '<div style="text-align: center; color: var(--text-gray); padding: 20px;">Loading matches...</div>';
+         }
+
+         // Load available matches for livestream (same method as main dashboard)
+         let currentSelectedMatch = null;
+         function loadAvailableMatchesForLivestream() {
+             // Load ALL matches directly from Firebase
+             db.collection('matches').get().then(snapshot => {
+                 const allMatches = [];
+                 snapshot.forEach(doc => {
+                     const data = doc.data();
+                     allMatches.push({
+                         id: doc.id,
+                         ...data
+                     });
+                 });
+
+                 // Normalize data
+                 const matches = allMatches.map(match => normalizeMatchData(match));
+
+                 console.log('📊 Livestream Code Shop - Loaded', matches.length, 'total matches');
+
+                 if (matches.length === 0) {
+                     document.getElementById('livestreamMatchesList').innerHTML = '<div style="text-align: center; color: var(--text-gray); padding: 20px;">No matches available</div>';
+                     return;
+                 }
+
+                 // Sort by date
+                 matches.sort((a, b) => new Date(a.matchDate) - new Date(b.matchDate));
+
+                 // Filter: Show all upcoming, live, and finished matches
+                 const today = getTodayDate();
+                 const filteredMatches = matches.filter(match => {
+                     const matchDate = match.matchDate;
+                     const status = match.status;
+                     
+                     // Show today's games (live or can be live)
+                     if (matchDate === today) return true;
+                     // Show future matches (upcoming)
+                     if (matchDate > today) return true;
+                     // Show past matches (finished)
+                     if (matchDate < today) return true;
+                     
+                     return false;
+                 });
+
+                 console.log('📊 Livestream Code Shop - Filtered', filteredMatches.length, 'matches');
+
+                 if (filteredMatches.length === 0) {
+                     document.getElementById('livestreamMatchesList').innerHTML = '<div style="text-align: center; color: var(--text-gray); padding: 20px;">No matches available</div>';
+                     return;
+                 }
+
+                 let html = '';
+                 filteredMatches.forEach(match => {
+                     const isPaid = match.livestream && match.livestream.isPaid;
+                     const price = match.livestream ? match.livestream.price : 0;
+                     const matchStatus = getMatchStatus(match.matchDate, match.status);
+                     
+                     // Check if user has code for this match
+                     const currentUserId = auth.currentUser?.uid;
+                     const livestreamCodes = match.livestreamCodes || [];
+                     const userHasCode = currentUserId && livestreamCodes.some(code => code.userId === currentUserId);
+                     const userCode = currentUserId && livestreamCodes.find(code => code.userId === currentUserId);
+                     
+                     const badge = userHasCode ? `<span style="font-size: 0.65em; background: rgba(0, 255, 136, 0.25); border: 1px solid rgba(0, 255, 136, 0.5); color: var(--accent-green); padding: 4px 8px; border-radius: 6px; font-weight: 700;">✅ YOU OWN CODE: ${userCode.code}</span>` : '';
+                     
+                     html += `
+                         <div onclick="selectMatchForLivestream('${match.id}', '${match.teamA?.name || 'Team A'}', '${match.teamB?.name || 'Team B'}', '${match.matchDate}', '${isPaid}', '${price}')" 
+                              style="padding: 15px; background: ${userHasCode ? 'rgba(0, 255, 136, 0.08)' : 'rgba(255, 215, 0, 0.1)'}; border: 2px solid ${userHasCode ? 'rgba(0, 255, 136, 0.4)' : 'rgba(255, 215, 0, 0.2)'}; border-radius: 10px; cursor: pointer; transition: all 0.3s ease;"
+                              onmouseover="this.style.background='${userHasCode ? 'rgba(0, 255, 136, 0.12)' : 'rgba(255, 215, 0, 0.15)'}'; this.style.borderColor='${userHasCode ? 'rgba(0, 255, 136, 0.6)' : 'rgba(255, 215, 0, 0.4)'}';"
+                              onmouseout="this.style.background='${userHasCode ? 'rgba(0, 255, 136, 0.08)' : 'rgba(255, 215, 0, 0.1)'}'; this.style.borderColor='${userHasCode ? 'rgba(0, 255, 136, 0.4)' : 'rgba(255, 215, 0, 0.2)'}';">
+                             <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+                                 <div style="font-weight: 600; color: var(--text-white);">
+                                     ${match.teamA?.name || 'Team A'} vs ${match.teamB?.name || 'Team B'}
+                                 </div>
+                                 <span style="font-size: 0.75em; color: var(--accent-green); font-weight: 600;">${matchStatus}</span>
+                             </div>
+                             <div style="color: var(--text-gray); font-size: 0.85em; display: flex; justify-content: space-between; margin-bottom: 8px;">
+                                 <span>📅 ${formatDateWithDay(match.matchDate)}</span>
+                                 <span>${isPaid ? `💰 ₦${price?.toLocaleString() || 'N/A'}` : '✅ FREE'}</span>
+                             </div>
+                             ${badge}
+                         </div>
+                     `;
+                 });
+                 document.getElementById('livestreamMatchesList').innerHTML = html;
+             }).catch(error => {
+                 console.error('❌ Error loading matches:', error);
+                 document.getElementById('livestreamMatchesList').innerHTML = '<div style="text-align: center; color: #ff6b6b; padding: 20px;">❌ Error loading matches. Please try again.</div>';
+             });
+         }
+
+         // Select match for livestream
+         function selectMatchForLivestream(matchId, teamA, teamB, matchDate, isPaid, price) {
+             currentSelectedMatch = {
+                 id: matchId,
+                 teamA: teamA,
+                 teamB: teamB,
+                 matchDate: matchDate,
+                 isPaid: isPaid === 'true',
+                 price: parseFloat(price)
+             };
+
+             // Show match info
+             document.getElementById('selectedMatchInfo').style.display = 'block';
+             document.getElementById('selectedMatchName').textContent = `${teamA} vs ${teamB}`;
+             document.getElementById('selectedMatchDate').textContent = new Date(matchDate).toLocaleDateString();
+             document.getElementById('selectedMatchType').textContent = currentSelectedMatch.isPaid ? 'Paid Livestream' : 'Free Livestream';
+             document.getElementById('selectedMatchPrice').textContent = currentSelectedMatch.isPaid ? `₦${currentSelectedMatch.price?.toLocaleString() || 'N/A'}` : 'FREE';
+
+             // Check if user already has a code for this match
+             checkUserExistingCode(matchId);
+         }
+
+         // Check if user already has a code for the selected match
+         function checkUserExistingCode(matchId) {
+             if (!auth.currentUser) {
+                 showPaymentOptions();
+                 return;
+             }
+
+             db.collection('matches').doc(matchId).get().then(doc => {
+                 if (!doc.exists) {
+                     showPaymentOptions();
+                     return;
+                 }
+
+                 const matchData = doc.data();
+                 const livestreamCodes = matchData.livestreamCodes || [];
+                 const currentUserId = auth.currentUser.uid;
+
+                 // Find if user already has a code for this match
+                 const userCode = livestreamCodes.find(code => code.userId === currentUserId);
+
+                 if (userCode) {
+                     console.log('✅ User already has code for this match:', userCode.code);
+                     displayExistingCode(userCode);
+                 } else {
+                     console.log('❌ No existing code found, showing payment options');
+                     showPaymentOptions();
+                 }
+             }).catch(error => {
+                 console.error('Error checking existing code:', error);
+                 showPaymentOptions();
+             });
+         }
+
+         // Display existing code to user
+         function displayExistingCode(codeData) {
+             document.getElementById('paidCodeOptions').style.display = 'none';
+             document.getElementById('getCodeBtn').style.display = 'none';
+             document.getElementById('codeDisplay').style.display = 'block';
+             document.getElementById('displayedCode').textContent = codeData.code;
+             
+             // Show message that this is existing code
+             const codeDisplay = document.getElementById('codeDisplay');
+             if (!document.getElementById('existingCodeMsg')) {
+                 const msg = document.createElement('div');
+                 msg.id = 'existingCodeMsg';
+                 msg.style.cssText = 'background: rgba(0, 255, 136, 0.15); border: 1px solid rgba(0, 255, 136, 0.3); padding: 10px; border-radius: 8px; margin-bottom: 10px; text-align: center; color: var(--accent-green); font-weight: 600;';
+                 msg.textContent = '✅ You already own this code';
+                 codeDisplay.parentElement.insertBefore(msg, codeDisplay);
+             }
+             
+             console.log('🎟️ Displaying existing code:', codeData.code);
+         }
+
+         // Show payment options (when no existing code)
+         function showPaymentOptions() {
+             document.getElementById('codeDisplay').style.display = 'none';
+             
+             // Remove existing code message if present
+             const existingMsg = document.getElementById('existingCodeMsg');
+             if (existingMsg) existingMsg.remove();
+
+             // Show payment info if paid
+             if (currentSelectedMatch.isPaid) {
+                 document.getElementById('paidCodeOptions').style.display = 'block';
+                 document.getElementById('paymentAmount').textContent = `₦${currentSelectedMatch.price?.toLocaleString() || '0'}`;
+                 // Use walletData.balance (same as wallet modal)
+                 document.getElementById('walletBalance').textContent = `₦${(walletData.balance || 0).toLocaleString()}`;
+
+                 console.log('💰 Checking wallet balance:', walletData.balance, 'Required:', currentSelectedMatch.price);
+
+                 if ((walletData.balance || 0) < currentSelectedMatch.price) {
+                     console.log('❌ Insufficient funds:', walletData.balance, '<', currentSelectedMatch.price);
+                     document.getElementById('insufficientFundsMsg').style.display = 'block';
+                     document.getElementById('getCodeBtn').style.display = 'none';
+                 } else {
+                     console.log('✅ Sufficient funds:', walletData.balance, '>=', currentSelectedMatch.price);
+                     document.getElementById('insufficientFundsMsg').style.display = 'none';
+                     document.getElementById('getCodeBtn').style.display = 'block';
+                     document.getElementById('getCodeBtn').textContent = 'Deduct & Get Code';
+                 }
+             } else {
+                 document.getElementById('paidCodeOptions').style.display = 'none';
+                 document.getElementById('getCodeBtn').style.display = 'block';
+                 document.getElementById('getCodeBtn').textContent = 'Get Free Code';
+             }
+         }
+
+         // Generate random code
+         function generateLivestreamCode(isPaid) {
+             const prefix = isPaid ? 'PDLS' : 'FDLS';
+             const randomNum = Math.floor(Math.random() * 10000).toString().padStart(4, '0');
+             return prefix + randomNum;
+         }
+
+         // Get livestream code
+         function getLivestreamCode() {
+             if (!currentSelectedMatch) return;
+
+             // Hide get code button
+             document.getElementById('getCodeBtn').style.display = 'none';
+
+             // If paid, deduct from wallet (use walletData.balance like highlights)
+             if (currentSelectedMatch.isPaid) {
+                 if ((walletData.balance || 0) < currentSelectedMatch.price) {
+                     console.error('❌ Insufficient funds:', walletData.balance, '<', currentSelectedMatch.price);
+                     alert('❌ Insufficient funds. Please deposit to your wallet.');
+                     document.getElementById('getCodeBtn').style.display = 'block';
+                     return;
+                 }
+                 
+                 console.log('💳 Deducting', currentSelectedMatch.price, 'from wallet balance:', walletData.balance);
+                 
+                 // Deduct from wallet (same way as highlights/gifting)
+                 walletData.balance = (walletData.balance || 0) - currentSelectedMatch.price;
+                 
+                 // Record transaction
+                 const transaction = {
+                     type: 'livestream_code',
+                     amount: -currentSelectedMatch.price,
+                     description: `Livestream Code - ${currentSelectedMatch.teamA} vs ${currentSelectedMatch.teamB}`,
+                     timestamp: new Date().toISOString(),
+                     matchId: currentSelectedMatch.id
+                 };
+                 
+                 if (!walletData.transactions) {
+                     walletData.transactions = [];
+                 }
+                 walletData.transactions.push(transaction);
+                 
+                 // Save wallet changes to Firebase
+                 saveWalletDataToFirebase();
+                 console.log('✅ Wallet updated and saved');
+             }
+
+             // Generate code
+             const code = generateLivestreamCode(currentSelectedMatch.isPaid);
+             console.log('📹 Generated livestream code:', code);
+
+             // Save code to Firebase under the match
+             const codeData = {
+                 code: code,
+                 userId: auth.currentUser.uid,
+                 userName: userData.name,
+                 matchId: currentSelectedMatch.id,
+                 isPaid: currentSelectedMatch.isPaid,
+                 amount: currentSelectedMatch.isPaid ? currentSelectedMatch.price : 0,
+                 createdAt: new Date().toISOString(),
+                 expiresAt: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString() // Expires in 7 days
+             };
+
+             // Prepare match update with revenue tracking
+             const matchUpdateData = {
+                 livestreamCodes: firebase.firestore.FieldValue.arrayUnion(codeData)
+             };
+
+             // If paid, increment total revenue
+             if (currentSelectedMatch.isPaid) {
+                 matchUpdateData['livestream.totalRevenue'] = firebase.firestore.FieldValue.increment(currentSelectedMatch.price);
+             }
+
+             db.collection('matches').doc(currentSelectedMatch.id).update(matchUpdateData).then(() => {
+                 // Display code
+                 document.getElementById('displayedCode').textContent = code;
+                 document.getElementById('codeDisplay').style.display = 'block';
+                 
+                 // Update display balance
+                 document.getElementById('walletBalance').textContent = `₦${(walletData.balance || 0).toLocaleString()}`;
+                 
+                 console.log('✅ Code generated and saved successfully');
+                 console.log('💰 Revenue tracked:', currentSelectedMatch.isPaid ? currentSelectedMatch.price : 'FREE');
+             }).catch(error => {
+                 console.error('❌ Error saving code:', error);
+                 alert('❌ Error generating code. Please try again.');
+                 document.getElementById('getCodeBtn').style.display = 'block';
+             });
+         }
+
+         // Copy code to clipboard
+         function copyCodeToClipboard() {
+             const code = document.getElementById('displayedCode').textContent;
+             navigator.clipboard.writeText(code).then(() => {
+                 alert('✅ Code copied to clipboard!');
+             }).catch(() => {
+                 alert('Error copying code');
+             });
+         }
+
+         // Download code
+         function downloadCode() {
+             const code = document.getElementById('displayedCode').textContent;
+             const match = currentSelectedMatch;
+             const content = `Livestream Code\n\nMatch: ${match.teamA} vs ${match.teamB}\nDate: ${new Date(match.matchDate).toLocaleDateString()}\nCode: ${code}\n\nExpires in 7 days`;
+             
+             const element = document.createElement('a');
+             element.setAttribute('href', 'data:text/plain;charset=utf-8,' + encodeURIComponent(content));
+             element.setAttribute('download', `livestream-code-${code}.txt`);
+             element.style.display = 'none';
+             document.body.appendChild(element);
+             element.click();
+             document.body.removeChild(element);
+         }
+
+         // Save profile changes
+        let playerImageFile = null;
+
+        function previewPlayerImage(event) {
+            const file = event.target.files[0];
+            if (file) {
+                playerImageFile = file;
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    const preview = document.getElementById('playerImagePreview');
+                    preview.innerHTML = `<img src="${e.target.result}" style="width: 100%; height: 100%; object-fit: cover;">`;
+                    document.getElementById('playerImageStatus').textContent = file.name;
+                };
+                reader.readAsDataURL(file);
+            }
         }
 
-        // Save profile changes
+        function uploadPlayerImageToCloudinary() {
+            return new Promise((resolve, reject) => {
+                if (!playerImageFile) {
+                    resolve(null);
+                    return;
+                }
+
+                const formData = new FormData();
+                formData.append('file', playerImageFile);
+                formData.append('upload_preset', 'posepreset');
+
+                fetch('https://api.cloudinary.com/v1_1/dlscyqz7x/image/upload', {
+                    method: 'POST',
+                    body: formData
+                })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.secure_url) {
+                            playerImageFile = null;
+                            resolve(data.secure_url);
+                        } else {
+                            throw new Error('No secure URL in response');
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error uploading to Cloudinary:', error);
+                        showToast('Error uploading player image', 'error');
+                        reject(error);
+                    });
+            });
+        }
+
         function saveProfileChanges() {
             userData.name = document.getElementById('inputName').value;
             userData.bio = document.getElementById('inputBio').value;
-            updateProfileDisplay();
-            saveUserDataToFirebase();
-            showToast('Profile updated successfully!', 'success');
-            closeProfileModal();
+            
+            // Upload player image if selected
+            if (playerImageFile) {
+                showToast('Uploading player image...', 'success');
+                uploadPlayerImageToCloudinary()
+                    .then(imageUrl => {
+                        if (imageUrl) {
+                            userData.playerPicture = imageUrl;
+                        }
+                        updateProfileDisplay();
+                        saveUserDataToFirebase();
+                        showToast('Profile updated successfully!', 'success');
+                        closeProfileModal();
+                    })
+                    .catch(error => {
+                        console.error('Error saving profile:', error);
+                        showToast('Error saving profile', 'error');
+                    });
+            } else {
+                updateProfileDisplay();
+                saveUserDataToFirebase();
+                showToast('Profile updated successfully!', 'success');
+                closeProfileModal();
+            }
         }
 
         // ===== WALLET FUNCTIONS =====
@@ -6907,6 +7424,15 @@
         // Open profile modal
         function openProfileModal() {
             document.getElementById('profileModalOverlay').classList.add('active');
+            loadPlayerImagePreview();
+        }
+
+        function loadPlayerImagePreview() {
+            if (userData && userData.playerPicture) {
+                const preview = document.getElementById('playerImagePreview');
+                preview.innerHTML = `<img src="${userData.playerPicture}" style="width: 100%; height: 100%; object-fit: cover;">`;
+                document.getElementById('playerImageStatus').textContent = 'Image loaded';
+            }
         }
 
         // Close profile modal
